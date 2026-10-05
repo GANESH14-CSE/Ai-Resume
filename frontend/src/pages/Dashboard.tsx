@@ -1,0 +1,130 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../services/api';
+import { 
+  Sparkles, 
+  ShieldCheck, 
+  FileText, 
+  ArrowRight, 
+  Cpu, 
+  CheckCircle, 
+  Layers,
+  Database
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+export const Dashboard: React.FC = () => {
+  const { data: health, isLoading } = useQuery({
+    queryKey: ['health'],
+    queryFn: api.getHealth,
+  });
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-8 animate-fadeIn">
+      {/* Hero Welcome Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-850 border border-slate-800 p-8 shadow-xl">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 max-w-2xl space-y-4">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Strict Truthfulness Guaranteed</span>
+          </div>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
+            Tailor Your Resume with <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-300">Zero Hallucinations</span>
+          </h1>
+          <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+            Paste any Job Description. Our multi-step pipeline extracts requirements, matches only verified facts from your master profile, enforces source-bound claims, and produces ATS-safe PDFs.
+          </p>
+          <div className="pt-2 flex flex-wrap gap-4">
+            <Link
+              to="/create"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm transition-all duration-150 shadow-lg shadow-brand-500/25 active:scale-95"
+            >
+              <Sparkles className="w-4 h-4 text-slate-950" />
+              <span>Create Tailored Resume</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              to="/profile"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm border border-slate-700 transition-all duration-150"
+            >
+              <span>Manage Master Profile</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Total Resumes</span>
+            <FileText className="w-4 h-4 text-brand-400" />
+          </div>
+          <div className="text-2xl font-bold text-white">0</div>
+          <p className="text-xs text-slate-500">Versioned & downloadable</p>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Analyzed JDs</span>
+            <Layers className="w-4 h-4 text-cyan-400" />
+          </div>
+          <div className="text-2xl font-bold text-white">0</div>
+          <p className="text-xs text-slate-500">Cached requirement graphs</p>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">LLM Adapter</span>
+            <Cpu className="w-4 h-4 text-violet-400" />
+          </div>
+          <div className="text-lg font-bold text-white capitalize">
+            {isLoading ? 'Checking...' : health?.llm_provider || 'Mock'}
+          </div>
+          <p className="text-xs text-slate-500">
+            {health?.mock_llm ? 'Mock mode active (instant test)' : 'Live API connected'}
+          </p>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold uppercase tracking-wider">Core API Status</span>
+            <Database className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div className="text-lg font-bold text-emerald-400 flex items-center space-x-1.5">
+            <CheckCircle className="w-4 h-4" />
+            <span>Ready (v{health?.version || '1.0.0'})</span>
+          </div>
+          <p className="text-xs text-slate-500">Python {health?.python_version || '3.11+'}</p>
+        </div>
+      </div>
+
+      {/* Multi-Step Pipeline Preview */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 className="text-base font-bold text-white flex items-center space-x-2">
+          <span>Deterministic & AI Architecture Pipeline</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-2 text-xs">
+          {[
+            { step: '1', title: 'JD Extraction', desc: 'LLM structured JSON' },
+            { step: '2', title: 'Skill Canonicalization', desc: 'Python alias map' },
+            { step: '3', title: 'Deterministic Match', desc: 'Score & rank overlap' },
+            { step: '4', title: 'Source-bound Draft', desc: 'ID-referenced bullets' },
+            { step: '5', title: 'Truthfulness Validator', desc: 'Reject fake metrics/skills' },
+            { step: '6', title: 'ATS Scoring', desc: 'Keyword & role metrics' },
+            { step: '7', title: 'Clean Render', desc: 'ATS single-column PDF/DOCX' },
+          ].map((item) => (
+            <div key={item.step} className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 space-y-1">
+              <span className="inline-block px-1.5 py-0.5 rounded bg-slate-800 text-brand-400 font-mono font-bold text-[10px]">
+                Step {item.step}
+              </span>
+              <p className="font-semibold text-slate-200 text-xs leading-tight">{item.title}</p>
+              <p className="text-[11px] text-slate-500">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
