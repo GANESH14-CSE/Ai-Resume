@@ -144,3 +144,7 @@ LLM_TEMPERATURE = float(os.getenv('LLM_TEMPERATURE', '0.2'))
 LLM_MAX_TOKENS = int(os.getenv('LLM_MAX_TOKENS', '4096'))
 LLM_TIMEOUT_SECONDS = int(os.getenv('LLM_TIMEOUT_SECONDS', '45'))
 MOCK_LLM = os.getenv('MOCK_LLM', 'false').lower() in ('true', '1', 't')
+
+# Google OAuth Credentials
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')

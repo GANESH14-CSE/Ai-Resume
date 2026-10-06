@@ -408,3 +408,108 @@ class ResumePdfDownloadView(APIView):
             response = HttpResponse(pdf_stream.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
+
+import base64
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from profiles.models import GoogleCredentials
+
+class AutoApplySendView(APIView):
+    permission_classes = [AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        user = get_current_app_user(request)
+        if not user:
+            return Response({"error": "User not found"}, status=400)
+
+        email = request.data.get('email')
+        role = request.data.get('role')
+        image = request.FILES.get('image')
+
+        if not email or not role or not image:
+            return Response({"error": "Email, role, and screenshot are required"}, status=400)
+
+        google_creds = GoogleCredentials.objects.filter(user=user).first()
+        if not google_creds:
+            return Response({"error": "Google account not connected"}, status=400)
+
+        profile_obj = Profile.objects.filter(user=user).first()
+        if not profile_obj:
+            return Response({"error": "Master profile not found"}, status=400)
+            
+        profile_data = MasterProfileSerializer(profile_obj).data
+
+        try:
+            image_base64 = base64.b64encode(image.read()).decode('utf-8')
+            
+            ai_client = AIClient()
+            job_analysis = ai_client.analyze_screenshot(image_base64)
+            
+            # Override target role from user input
+            job_analysis['job_title'] = role
+            if not job_analysis.get('company'):
+                job_analysis['company'] = "Hiring Team"
+                
+            cand_skills = profile_data.get('skills', [])
+            jd_req_skills = job_analysis.get('required_skills', [])
+            jd_opt_skills = job_analysis.get('nice_to_have_skills', [])
+
+            matched_skills, missing_skills, match_ratio = MatchingEngine.match_skills(
+                candidate_skills=cand_skills,
+                jd_required_skills=jd_req_skills,
+                jd_nice_to_have_skills=jd_opt_skills
+            )
+
+            tailored_content, audit_report = ai_client.tailor_resume(
+                master_profile=profile_data,
+                job_analysis=job_analysis,
+                matched_skills=matched_skills,
+                missing_skills=missing_skills
+            )
+
+            cover_letter = ai_client.generate_cover_letter(profile_data, job_analysis)
+
+            pdf_stream = AtsPdfGenerator.generate(tailored_content)
+            
+            # Setup Google API Credentials
+            creds = Credentials(
+                token=google_creds.token,
+                refresh_token=google_creds.refresh_token,
+                token_uri=google_creds.token_uri,
+                client_id=google_creds.client_id,
+                client_secret=google_creds.client_secret,
+                scopes=google_creds.scopes
+            )
+            
+            service = build('gmail', 'v1', credentials=creds)
+
+            # Create Email Message
+            message = MIMEMultipart()
+            message['To'] = email
+            message['Subject'] = f"Application for {role} - {profile_data.get('name')}"
+            
+            message.attach(MIMEText(cover_letter, 'plain'))
+            
+            # Attach PDF
+            pdf_attachment = MIMEApplication(pdf_stream.getvalue(), _subtype="pdf")
+            pdf_attachment.add_header('Content-Disposition', 'attachment', filename=f"{profile_data.get('name').replace(' ', '_')}_Resume.pdf")
+            message.attach(pdf_attachment)
+
+            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+            
+            send_message = (service.users().messages().send(userId="me", body={'raw': raw_message}).execute())
+
+            return Response({
+                "message": "Email sent successfully",
+                "message_id": send_message['id']
+            })
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response({"error": {"message": f"Send Error: {str(e)}"}}, status=500)
+

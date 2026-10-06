@@ -31,6 +31,54 @@ class AIClient:
             logger.error(f"Error initializing OpenAI client: {e}")
             return None
 
+    def analyze_screenshot(self, image_base64: str) -> dict:
+        """Uses Vision model to extract JD and company name from a screenshot."""
+        if self.mock_mode or not self.api_key:
+            return self._fallback_analyze_jd("Software Engineer")
+
+        client = self._get_openai_client()
+        if not client:
+            return self._fallback_analyze_jd("Software Engineer")
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Extract the company name, job title, and key requirements from this job posting screenshot. Return as JSON with keys: company, job_title, required_skills, nice_to_have_skills, keywords, responsibilities, summary."},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
+                        ]
+                    }
+                ],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            logger.error(f"Vision JD analysis failed: {e}")
+            return self._fallback_analyze_jd("Software Engineer")
+
+    def generate_cover_letter(self, master_profile: dict, job_analysis: dict) -> str:
+        if self.mock_mode or not self.api_key:
+            return f"Dear Hiring Manager,\n\nI am writing to apply for the {job_analysis.get('job_title', 'Role')} position at {job_analysis.get('company', 'your company')}. Please find my resume attached.\n\nBest,\n{master_profile.get('name', 'Candidate')}"
+            
+        client = self._get_openai_client()
+        if not client:
+            return "Please find my resume attached."
+            
+        prompt = f"Write a professional, concise, and highly converting cold email/cover letter for {master_profile.get('name')} applying for {job_analysis.get('job_title')} at {job_analysis.get('company')}. Use facts from this profile: {json.dumps(master_profile)} and target these requirements: {json.dumps(job_analysis)}."
+        try:
+            response = client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            return "Please find my resume attached."
+
     def analyze_job_description(self, jd_text: str) -> dict:
         """
         Parses Job Description text and returns structured requirements.

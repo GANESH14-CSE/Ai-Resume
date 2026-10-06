@@ -15,6 +15,9 @@ from .models import (
     EmploymentType
 )
 from .serializers import MasterProfileSerializer
+from common.parsers import extract_text_from_file
+from ai.client import AIClient
+from rest_framework.parsers import MultiPartParser, FormParser
 
 def get_current_app_user(request):
     """
@@ -236,3 +239,40 @@ class ResetProfileView(APIView):
             Certification.objects.filter(user=user).delete()
             Achievement.objects.filter(user=user).delete()
         return Response({"message": "Master Profile reset successfully."})
+
+class ExtractProfileView(APIView):
+    """
+    Extracts structured Master Profile JSON from an uploaded resume file (PDF, DOCX) using AI.
+    """
+    permission_classes = [AllowAny]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        user = get_current_app_user(request)
+        if not user:
+            return Response({"error": "No active user account found."}, status=400)
+            
+        file_obj = request.FILES.get('resume')
+        if not file_obj:
+            return Response({"error": "No resume file provided."}, status=400)
+            
+        try:
+            raw_text = extract_text_from_file(file_obj, file_obj.name)
+            if not raw_text.strip():
+                return Response({"error": "Could not extract text from the file."}, status=400)
+                
+            client = AIClient()
+            profile_data = client.parse_raw_resume(raw_text)
+            
+            # Make sure we don't return null for arrays
+            if not profile_data.get('skills'): profile_data['skills'] = []
+            if not profile_data.get('experiences'): profile_data['experiences'] = []
+            if not profile_data.get('projects'): profile_data['projects'] = []
+            if not profile_data.get('education'): profile_data['education'] = []
+            if not profile_data.get('certifications'): profile_data['certifications'] = []
+            if not profile_data.get('achievements'): profile_data['achievements'] = []
+            
+            return Response(profile_data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+

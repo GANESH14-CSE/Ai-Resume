@@ -75,6 +75,9 @@ export const Profile: React.FC = () => {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
     },
+    onError: (err: any) => {
+      alert(`Failed to save profile: ${err.message || 'Unknown error'}`);
+    }
   });
 
   const resetMutation = useMutation({
@@ -94,33 +97,28 @@ export const Profile: React.FC = () => {
     saveMutation.mutate(profile);
   };
 
-  const handleExportJson = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(profile, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `MasterProfile_${profile.name || 'Export'}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
-
-  const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileReader = new FileReader();
-    if (e.target.files && e.target.files[0]) {
-      fileReader.readAsText(e.target.files[0], 'UTF-8');
-      fileReader.onload = (event) => {
-        try {
-          const parsed = JSON.parse(event.target?.result as string);
-          setProfile({
-            ...EMPTY_PROFILE,
-            ...parsed,
-          });
-          alert('Profile JSON loaded into editor. Remember to click "Save Master Profile"!');
-        } catch {
-          alert('Invalid JSON file format.');
-        }
+  const extractMutation = useMutation({
+    mutationFn: api.extractProfileFromResume,
+    onSuccess: (extractedProfile) => {
+      const newProfile = {
+        ...EMPTY_PROFILE,
+        ...extractedProfile,
       };
+      setProfile(newProfile);
+      // Automatically save after extracting
+      saveMutation.mutate(newProfile);
+    },
+    onError: (err: any) => {
+      alert(`Failed to extract resume: ${err.message || 'Unknown error'}`);
     }
+  });
+
+  const handleUploadResume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      extractMutation.mutate(e.target.files[0]);
+    }
+    // reset input so the same file can be selected again
+    e.target.value = '';
   };
 
   // Skill Management
@@ -310,22 +308,19 @@ export const Profile: React.FC = () => {
 
         {/* Action Controls */}
         <div className="flex items-center space-x-2">
-          <button
-            onClick={handleExportJson}
-            title="Export Profile as JSON backup"
-            className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center space-x-1.5 transition-colors"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Export JSON</span>
-          </button>
-
           <label
-            title="Import Profile from JSON"
+            title="Upload Resume to Auto-Fill Profile"
             className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center space-x-1.5 cursor-pointer transition-colors"
           >
-            <Upload className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Import JSON</span>
-            <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
+            {extractMutation.isPending ? (
+              <div className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Upload className="w-3.5 h-3.5 text-slate-400" />
+            )}
+            <span className="hidden sm:inline">
+              {extractMutation.isPending ? 'Extracting...' : 'Upload Resume'}
+            </span>
+            <input type="file" accept=".pdf,.docx,.txt" onChange={handleUploadResume} className="hidden" disabled={extractMutation.isPending} />
           </label>
 
           <button

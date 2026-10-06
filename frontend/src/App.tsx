@@ -8,7 +8,7 @@ import { CreateResume } from './pages/CreateResume';
 import { JobAnalysis } from './pages/JobAnalysis';
 import { ResumePreview } from './pages/ResumePreview';
 import { History } from './pages/History';
-import { Settings } from './pages/Settings';
+import { AutoApply } from './pages/AutoApply';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
             <Route path="jobs/:id/analysis" element={<JobAnalysis />} />
             <Route path="resumes/:id" element={<ResumePreview />} />
             <Route path="history" element={<History />} />
-            <Route path="settings" element={<Settings />} />
+            <Route path="auto-apply" element={<AutoApply />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

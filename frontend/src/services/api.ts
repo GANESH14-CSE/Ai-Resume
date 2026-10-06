@@ -75,6 +75,14 @@ export const api = {
     const response = await apiClient.post<{ message: string }>('/profile/reset/');
     return response.data;
   },
+  extractProfileFromResume: async (file: File): Promise<MasterProfile> => {
+    const formData = new FormData();
+    formData.append('resume', file);
+    const response = await apiClient.post<MasterProfile>('/profile/extract/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 
   // Tailored Resume Generation Pipeline
   generateResume: async (payload: GenerateResumePayload): Promise<TailoredResume> => {
@@ -119,5 +127,19 @@ export const api = {
     const response = await apiClient.post<TailoredResume>('/resumes/apply-and-generate/', payload);
     return response.data;
   },
+  
+  saveGoogleToken: async (code: string): Promise<void> => {
+    await apiClient.post('/auth/google/', { code });
+  },
+
+  sendAutoApplication: async (payload: { email: string, role: string, image: File }): Promise<void> => {
+    const formData = new FormData();
+    formData.append('email', payload.email);
+    formData.append('role', payload.role);
+    formData.append('image', payload.image);
+    await apiClient.post('/applications/send/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
 };
 

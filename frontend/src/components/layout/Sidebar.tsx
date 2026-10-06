@@ -6,7 +6,8 @@ import {
   History, 
   Settings, 
   ShieldCheck, 
-  Sparkles 
+  Sparkles,
+  Send
 } from 'lucide-react';
 
 const navItems = [
@@ -14,7 +15,7 @@ const navItems = [
   { name: 'My Profile', path: '/profile', icon: UserCheck },
   { name: 'Create Resume', path: '/create', icon: Sparkles },
   { name: 'Resume History', path: '/history', icon: History },
-  { name: 'Settings', path: '/settings', icon: Settings },
+  { name: 'Auto Apply', path: '/auto-apply', icon: Send },
 ];
 
 export const Sidebar: React.FC = () => {

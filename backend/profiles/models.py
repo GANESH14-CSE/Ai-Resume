@@ -66,8 +66,8 @@ class Experience(TimeStampedModel):
         default=EmploymentType.JOB
     )
     location = models.CharField(max_length=255, blank=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True, help_text="Null if current role")
+    start_date = models.CharField(max_length=50, blank=True, null=True)
+    end_date = models.CharField(max_length=50, blank=True, null=True, help_text="Blank if current role")
     description_points = models.JSONField(default=list, help_text="List of verifiable factual bullet points.")
     technologies = models.ManyToManyField(Skill, blank=True, related_name='experiences')
     order = models.PositiveIntegerField(default=0)
@@ -84,8 +84,8 @@ class Project(TimeStampedModel):
     description_points = models.JSONField(default=list, help_text="List of verifiable project facts and achievements.")
     github_url = models.URLField(blank=True)
     live_url = models.URLField(blank=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
+    start_date = models.CharField(max_length=50, blank=True, null=True)
+    end_date = models.CharField(max_length=50, blank=True, null=True)
     domain = models.CharField(max_length=100, blank=True, help_text="E.g. FinTech, AI/ML, E-Commerce")
     technologies = models.ManyToManyField(Skill, blank=True, related_name='projects')
 
@@ -100,8 +100,8 @@ class Education(TimeStampedModel):
     institution = models.CharField(max_length=255)
     degree = models.CharField(max_length=255)
     field = models.CharField(max_length=255)
-    start_year = models.PositiveIntegerField(null=True, blank=True)
-    end_year = models.PositiveIntegerField(null=True, blank=True)
+    start_year = models.CharField(max_length=50, blank=True, null=True)
+    end_year = models.CharField(max_length=50, blank=True, null=True)
     grade = models.CharField(max_length=50, blank=True)
 
     class Meta:
@@ -114,7 +114,7 @@ class Certification(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certifications')
     name = models.CharField(max_length=255)
     issuer = models.CharField(max_length=255)
-    date = models.DateField(null=True, blank=True)
+    date = models.CharField(max_length=50, blank=True, null=True)
     credential_url = models.URLField(blank=True)
 
     class Meta:
@@ -127,10 +127,22 @@ class Achievement(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='achievements')
     title = models.CharField(max_length=255)
     description = models.TextField()
-    date = models.DateField(null=True, blank=True)
+    date = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         ordering = ['-date', 'title']
 
     def __str__(self):
         return self.title
+
+class GoogleCredentials(TimeStampedModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='google_credentials')
+    token = models.CharField(max_length=2048)
+    refresh_token = models.CharField(max_length=2048, blank=True, null=True)
+    token_uri = models.CharField(max_length=255, default='https://oauth2.googleapis.com/token')
+    client_id = models.CharField(max_length=255, blank=True, null=True)
+    client_secret = models.CharField(max_length=255, blank=True, null=True)
+    scopes = models.JSONField(default=list)
+
+    def __str__(self):
+        return f"Google Credentials for {self.user.username}"
