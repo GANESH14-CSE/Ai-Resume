@@ -8,10 +8,9 @@ api_v1_patterns = [
     path('health/', HealthCheckView.as_view(), name='health-check'),
     path('auth/login/', AuthLoginView.as_view(), name='auth-login'),
     path('auth/me/', CurrentUserView.as_view(), name='auth-me'),
-    # Future phase routers will be registered here:
-    # path('profile/', include('profiles.urls')),
-    # path('jobs/', include('jobs.urls')),
-    # path('resumes/', include('resumes.urls')),
+    path('profile/', include('profiles.urls')),
+    path('jobs/', include('jobs.urls')),
+    path('resumes/', include('resumes.urls')),
 ]
 
 urlpatterns = [

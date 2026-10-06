@@ -1,5 +1,15 @@
 import axios, { AxiosError } from 'axios';
-import { HealthCheckResponse, AuthResponse } from '../types';
+import {
+  HealthCheckResponse,
+  AuthResponse,
+  MasterProfileResponse,
+  MasterProfile,
+  TailoredResume,
+  GenerateResumePayload,
+  UploadResumeResponse,
+  CompareResumeResponse,
+  ApplyAndGeneratePayload
+} from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
@@ -19,11 +29,10 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor for standardized error handling
+// Standardized error handler
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
-    // Return structured error
     if (error.response?.data?.error) {
       return Promise.reject(error.response.data.error);
     }
@@ -51,5 +60,64 @@ export const api = {
   getCurrentUser: async () => {
     const response = await apiClient.get('/auth/me/');
     return response.data;
-  }
+  },
+
+  // Master Profile (Single Source of Truth)
+  getMasterProfile: async (): Promise<MasterProfileResponse> => {
+    const response = await apiClient.get<MasterProfileResponse>('/profile/');
+    return response.data;
+  },
+  saveMasterProfile: async (profile: Partial<MasterProfile>): Promise<MasterProfileResponse> => {
+    const response = await apiClient.post<MasterProfileResponse>('/profile/', profile);
+    return response.data;
+  },
+  resetMasterProfile: async (): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>('/profile/reset/');
+    return response.data;
+  },
+
+  // Tailored Resume Generation Pipeline
+  generateResume: async (payload: GenerateResumePayload): Promise<TailoredResume> => {
+    const response = await apiClient.post<TailoredResume>('/resumes/generate/', payload);
+    return response.data;
+  },
+  getResume: async (id: string): Promise<TailoredResume> => {
+    const response = await apiClient.get<TailoredResume>(`/resumes/${id}/`);
+    return response.data;
+  },
+  getResumes: async (): Promise<TailoredResume[]> => {
+    const response = await apiClient.get<TailoredResume[]>('/resumes/');
+    return response.data;
+  },
+  getPdfDownloadUrl: (id: string): string => {
+    return `${API_BASE_URL}/resumes/${id}/pdf/`;
+  },
+
+  // Custom Resume Creation & Interactive Customization Pipeline
+  uploadAndParseResume: async (file?: File, rawText?: string): Promise<UploadResumeResponse> => {
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await apiClient.post<UploadResumeResponse>('/resumes/upload-parse/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    }
+    const response = await apiClient.post<UploadResumeResponse>('/resumes/upload-parse/', { raw_text: rawText });
+    return response.data;
+  },
+
+  analyzeAndCompareResume: async (resumeContent: any, jdText: string): Promise<CompareResumeResponse> => {
+    const response = await apiClient.post<CompareResumeResponse>('/resumes/analyze-compare/', {
+      resume_content: resumeContent,
+      job_description_text: jdText,
+    });
+    return response.data;
+  },
+
+  applyAndGenerateResume: async (payload: ApplyAndGeneratePayload): Promise<TailoredResume> => {
+    const response = await apiClient.post<TailoredResume>('/resumes/apply-and-generate/', payload);
+    return response.data;
+  },
 };
+

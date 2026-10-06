@@ -136,10 +136,11 @@ CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',') if 
 CORS_ALLOW_CREDENTIALS = True
 
 # AI & LLM Settings
-LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'mock')
+LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'openai')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
-LLM_MODEL = os.getenv('LLM_MODEL', 'claude-3-5-sonnet-20241022')
+LLM_MODEL = os.getenv('LLM_MODEL', 'gpt-4o-mini')
 LLM_TEMPERATURE = float(os.getenv('LLM_TEMPERATURE', '0.2'))
 LLM_MAX_TOKENS = int(os.getenv('LLM_MAX_TOKENS', '4096'))
 LLM_TIMEOUT_SECONDS = int(os.getenv('LLM_TIMEOUT_SECONDS', '45'))
-MOCK_LLM = os.getenv('MOCK_LLM', 'true').lower() in ('true', '1', 't')
+MOCK_LLM = os.getenv('MOCK_LLM', 'false').lower() in ('true', '1', 't')
