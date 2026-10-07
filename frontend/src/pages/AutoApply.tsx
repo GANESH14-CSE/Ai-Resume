@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useDropzone } from 'react-dropzone';
-import { Mail, Briefcase, Image as ImageIcon, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Briefcase, Image as ImageIcon, Send, AlertCircle, CheckCircle2, Type, Building2 } from 'lucide-react';
 import { api } from '../services/api';
 
 export const AutoApply: React.FC = () => {
@@ -9,6 +9,9 @@ export const AutoApply: React.FC = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
+  const [company, setCompany] = useState('');
+  const [inputType, setInputType] = useState<'image' | 'text'>('image');
+  const [jdText, setJdText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -30,12 +33,11 @@ export const AutoApply: React.FC = () => {
         await api.saveGoogleToken(codeResponse.code);
         setIsAuthenticated(true);
       } catch (err: any) {
-        const errorMsg = typeof err === 'string' ? err : (err.message || 'Failed to save token');
-        setError(`Backend Error: ${errorMsg}`);
+        setError(`Backend Error: ${err.message || 'Failed to save token'}`);
       }
     },
     onError: (errorResponse) => {
-      setError(`Google Auth Error: ${errorResponse.error || 'Login failed or was cancelled.'}`);
+      setError(`Google Auth Error: ${errorResponse.error || 'Login failed.'}`);
     },
     flow: 'auth-code',
     scope: 'https://www.googleapis.com/auth/gmail.send'
@@ -49,28 +51,40 @@ export const AutoApply: React.FC = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/jpeg': ['.jpeg', '.jpg'],
-      'image/png': ['.png'],
-    },
+    accept: { 'image/jpeg': ['.jpeg', '.jpg'], 'image/png': ['.png'] },
     maxFiles: 1
   });
 
   const handleSend = async () => {
-    if (!email || !role || !file) {
-      setError('Please fill in all fields and upload a screenshot.');
+    if (!email || !role || !company) {
+      setError('Please fill in Target Role, Company, and Recruiter Email.');
       return;
     }
+    if (inputType === 'image' && !file) {
+      setError('Please upload a screenshot.');
+      return;
+    }
+    if (inputType === 'text' && !jdText.trim()) {
+      setError('Please enter the job description text.');
+      return;
+    }
+
     setIsSending(true);
     setError('');
     setSuccess(false);
 
     try {
-      await api.sendAutoApplication({ email, role, image: file });
+      if (inputType === 'image') {
+        await api.sendAutoApplication({ email, role, company, image: file });
+      } else {
+        await api.sendAutoApplication({ email, role, company, jd_text: jdText });
+      }
       setSuccess(true);
       setEmail('');
       setRole('');
+      setCompany('');
       setFile(null);
+      setJdText('');
     } catch (err: any) {
       setError(err.message || 'Failed to send application.');
     } finally {
@@ -88,7 +102,7 @@ export const AutoApply: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Auto Apply (Gmail)</h1>
             <p className="text-xs text-slate-400">
-              Upload a screenshot of a job posting. We'll extract the JD, tailor your resume, and send an email directly to the recruiter.
+              Provide the job posting via screenshot or text. We'll tailor your resume and email the recruiter.
             </p>
           </div>
         </div>
@@ -105,17 +119,15 @@ export const AutoApply: React.FC = () => {
           <div>
             <h2 className="text-lg font-bold text-white mb-2">Connect Your Gmail Account</h2>
             <p className="text-sm text-slate-400 max-w-md">
-              Authorize Truthful AI to send tailored job applications on your behalf directly from your Gmail address.
+              Authorize Truthful AI to send tailored job applications directly from your Gmail address.
             </p>
           </div>
-          
           {error && (
             <div className="mt-4 p-4 rounded-xl bg-rose-950/30 border border-rose-800/40 text-rose-200 text-xs flex items-start space-x-3 max-w-md w-full text-left">
               <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
               <p className="mt-1">{error}</p>
             </div>
           )}
-
           <button
             onClick={() => login()}
             className="px-6 py-3 rounded-lg bg-white text-slate-900 font-bold text-sm flex items-center space-x-2 hover:bg-slate-100 transition-colors mt-4"
@@ -145,6 +157,20 @@ export const AutoApply: React.FC = () => {
               </div>
 
               <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">Company Name *</label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Acme Corp"
+                    className="w-full pl-10 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-brand-500"
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">Recruiter Email *</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
@@ -167,16 +193,16 @@ export const AutoApply: React.FC = () => {
             )}
 
             {success && (
-              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-center space-x-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs flex items-center space-x-2">
+                <CheckCircle2 className="w-5 h-5 text-cyan-400" />
                 <span>Application generated and sent successfully via your Gmail!</span>
               </div>
             )}
 
             <button
               onClick={handleSend}
-              disabled={isSending || !file || !email || !role}
-              className="w-full px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/20 transition-all active:scale-95 disabled:opacity-50"
+              disabled={isSending || (!file && inputType === 'image') || (!jdText.trim() && inputType === 'text') || !email || !role || !company}
+              className="w-full px-5 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-cyan-500 hover:from-brand-500 hover:to-cyan-400 text-slate-950 font-extrabold text-sm flex items-center justify-center space-x-2 shadow-[0_4px_16px_rgba(6,182,212,0.3)] hover:shadow-[0_4px_24px_rgba(6,182,212,0.5)] transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
             >
               {isSending ? (
                 <>
@@ -193,38 +219,69 @@ export const AutoApply: React.FC = () => {
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 flex flex-col h-full">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300 mb-4">JD Screenshot *</h2>
-            
-            <div 
-              {...getRootProps()} 
-              className={`flex-1 min-h-[250px] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-slate-700 bg-slate-950 hover:border-slate-600 hover:bg-slate-900'
-              }`}
-            >
-              <input {...getInputProps()} />
-              {file ? (
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-lg bg-brand-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8 text-brand-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{file.name}</p>
-                    <p className="text-xs text-slate-400 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                  </div>
-                  <p className="text-xs text-brand-400 mt-2">Click or drag to replace</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center">
-                    <ImageIcon className="w-8 h-8 text-slate-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">Upload Job Posting</p>
-                    <p className="text-xs text-slate-400 mt-1">Drag & drop a screenshot, or click to select</p>
-                  </div>
-                </div>
-              )}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Job Description *</h2>
+              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                <button
+                  onClick={() => setInputType('image')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md flex items-center space-x-2 transition-all ${
+                    inputType === 'image' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>Screenshot</span>
+                </button>
+                <button
+                  onClick={() => setInputType('text')}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md flex items-center space-x-2 transition-all ${
+                    inputType === 'text' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Type className="w-3.5 h-3.5" />
+                  <span>Text</span>
+                </button>
+              </div>
             </div>
+            
+            {inputType === 'image' ? (
+              <div 
+                {...getRootProps()} 
+                className={`flex-1 min-h-[250px] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-colors ${
+                  isDragActive ? 'border-brand-500 bg-brand-500/5' : 'border-slate-700 bg-slate-950 hover:border-slate-600 hover:bg-slate-900'
+                }`}
+              >
+                <input {...getInputProps()} />
+                {file ? (
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-16 h-16 rounded-lg bg-brand-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-8 h-8 text-brand-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{file.name}</p>
+                      <p className="text-xs text-slate-400 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <p className="text-xs text-brand-400 mt-2">Click or drag to replace</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center">
+                      <ImageIcon className="w-8 h-8 text-slate-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">Upload Job Posting</p>
+                      <p className="text-xs text-slate-400 mt-1">Drag & drop a screenshot, or click to select</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <textarea
+                value={jdText}
+                onChange={(e) => setJdText(e.target.value)}
+                placeholder="Paste the job description here..."
+                className="flex-1 w-full min-h-[250px] p-4 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-brand-500 resize-none"
+              />
+            )}
           </div>
         </div>
       )}

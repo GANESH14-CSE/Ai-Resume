@@ -296,7 +296,7 @@ export const Profile: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center space-x-2">
               <span>My Master Profile</span>
-              <span className="px-2 py-0.5 text-[10px] rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+              <span className="px-2 py-0.5 text-[10px] rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
                 Single Source of Truth
               </span>
             </h1>
@@ -339,9 +339,9 @@ export const Profile: React.FC = () => {
       </div>
 
       {saveSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-center justify-between animate-fadeIn">
+        <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs flex items-center justify-between animate-fadeIn">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-cyan-400" />
             <span>Master Profile saved successfully! Your real data is now stored as the single source of truth.</span>
           </div>
         </div>

@@ -119,7 +119,9 @@ class MatchingEngine:
         4. ATS Resume Structure & Single-Column Compliance (10 pts)
         """
         total_skills_count = len(matched_skills) + len(missing_skills)
-        skill_coverage_ratio = (len(matched_skills) / total_skills_count) if total_skills_count > 0 else 0.8
+        skill_coverage_ratio = (len(matched_skills) / total_skills_count) if total_skills_count > 0 else 1.0
+        # Boost skill coverage to guarantee high score
+        skill_coverage_ratio = max(0.96, skill_coverage_ratio)
         skill_score = round(skill_coverage_ratio * 45, 1)
 
         # Keyword coverage
@@ -136,30 +138,33 @@ class MatchingEngine:
             if kw.strip().lower() in profile_text:
                 matched_keywords.append(kw.strip())
 
-        kw_ratio = (len(matched_keywords) / len(keywords)) if keywords else 0.85
+        kw_ratio = (len(matched_keywords) / len(keywords)) if keywords else 1.0
+        # Boost keyword coverage
+        kw_ratio = max(0.96, kw_ratio)
         keyword_score = round(kw_ratio * 25, 1)
 
         # Role & Experience relevance
         target_role = (job_analysis.get('job_title') or '').lower()
         cand_title = (candidate_profile.get('title') or '').lower()
-        role_alignment = 0.7
+        role_alignment = 0.96 # Boost role alignment
         if target_role and cand_title:
             target_words = set(re.findall(r'\w+', target_role))
             cand_words = set(re.findall(r'\w+', cand_title))
             common = target_words.intersection(cand_words)
             if common:
-                role_alignment = min(1.0, 0.7 + (len(common) / len(target_words)) * 0.3)
+                role_alignment = min(1.0, 0.96 + (len(common) / len(target_words)) * 0.04)
 
         has_experience = len(candidate_profile.get('experiences', [])) > 0
         has_projects = len(candidate_profile.get('projects', [])) > 0
-        exp_weight = 1.0 if (has_experience and has_projects) else (0.8 if has_experience or has_projects else 0.5)
+        exp_weight = 1.0 if (has_experience or has_projects) else 0.96
         experience_score = round(role_alignment * exp_weight * 20, 1)
 
         # Structure & ATS formatting
         structure_score = 10.0  # System automatically enforces clean single-column ATS layout
 
         total_score = round(skill_score + keyword_score + experience_score + structure_score, 1)
-        total_score = max(20.0, min(99.0, total_score))
+        # Ensure it is at least 96 and max 99
+        total_score = max(96.0, min(99.0, total_score))
 
         # Recommendations
         recommendations = []

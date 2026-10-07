@@ -132,11 +132,17 @@ export const api = {
     await apiClient.post('/auth/google/', { code });
   },
 
-  sendAutoApplication: async (payload: { email: string, role: string, image: File }): Promise<void> => {
+  sendAutoApplication: async (payload: { email: string, role: string, company: string, image?: File, text?: string }): Promise<void> => {
     const formData = new FormData();
     formData.append('email', payload.email);
     formData.append('role', payload.role);
-    formData.append('image', payload.image);
+    formData.append('company', payload.company);
+    if (payload.image) {
+      formData.append('image', payload.image);
+    }
+    if (payload.text) {
+      formData.append('text', payload.text);
+    }
     await apiClient.post('/applications/send/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });

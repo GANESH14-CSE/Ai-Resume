@@ -292,13 +292,13 @@ export const CreateResume: React.FC = () => {
                 {hasMasterProfile ? (
                   <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
                         <CheckCircle2 className="w-5 h-5" />
                       </div>
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="font-bold text-white text-sm">{masterProfile?.name}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
                             Saved Source of Truth
                           </span>
                         </div>
@@ -372,9 +372,9 @@ export const CreateResume: React.FC = () => {
                 )}
 
                 {parsedCustomResume && (
-                  <div className="p-4 rounded-xl bg-slate-950 border border-emerald-900/40 text-xs flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-slate-950 border border-cyan-900/40 text-xs flex items-center justify-between">
                     <div className="flex items-center space-x-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                       <div>
                         <span className="font-bold text-white">
                           Resume Loaded: {parsedCustomResume.name || 'Candidate'}{uploadedFile ? ` (${uploadedFile.name})` : ''}
@@ -384,7 +384,7 @@ export const CreateResume: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-mono">
                       Ready for JD
                     </span>
                   </div>
@@ -417,8 +417,8 @@ export const CreateResume: React.FC = () => {
                 </button>
 
                 {parsedCustomResume && (
-                  <div className="p-3 rounded-lg bg-slate-950 border border-emerald-900/40 text-xs flex items-center space-x-2 text-emerald-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <div className="p-3 rounded-lg bg-slate-950 border border-cyan-900/40 text-xs flex items-center space-x-2 text-cyan-300">
+                    <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                     <span>Resume extracted: {parsedCustomResume.name || 'Ready'} ({parsedCustomResume.skills?.length || 0} skills)</span>
                   </div>
                 )}
@@ -535,7 +535,7 @@ export const CreateResume: React.FC = () => {
 
             {/* MATCHING SKILLS FOUND */}
             <div>
-              <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-2">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Skills & Keywords Already Present in Your Resume ({comparisonResult.matching_skills?.length || 0})</span>
               </div>
@@ -549,7 +549,7 @@ export const CreateResume: React.FC = () => {
                   {comparisonResult.matching_skills?.map((s) => (
                     <span
                       key={s}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs font-medium flex items-center space-x-1"
+                      className="px-2.5 py-1 rounded-lg bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs font-medium flex items-center space-x-1"
                     >
                       <span>✓</span>
                       <span>{s}</span>
@@ -632,7 +632,7 @@ export const CreateResume: React.FC = () => {
                                 ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                                 : sug.type === 'keyword'
                                 ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
-                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                             }`}
                           >
                             {sug.type}

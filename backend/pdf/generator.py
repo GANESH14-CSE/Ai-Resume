@@ -8,7 +8,9 @@ from reportlab.platypus import (
     Paragraph,
     Spacer,
     HRFlowable,
-    KeepTogether
+    KeepTogether,
+    Table,
+    TableStyle
 )
 
 class AtsPdfGenerator:
@@ -27,8 +29,8 @@ class AtsPdfGenerator:
             pagesize=letter,
             leftMargin=36,
             rightMargin=36,
-            topMargin=36,
-            bottomMargin=36
+            topMargin=24,
+            bottomMargin=24
         )
 
         styles = getSampleStyleSheet()
@@ -208,11 +210,11 @@ class AtsPdfGenerator:
 
                 links = []
                 if proj.get('github_url'):
-                    links.append(f"GitHub: {proj['github_url']}")
+                    links.append(f"<a href='{proj['github_url']}' color='#2563eb'>GitHub</a>")
                 if proj.get('live_url'):
-                    links.append(f"Demo: {proj['live_url']}")
+                    links.append(f"<a href='{proj['live_url']}' color='#2563eb'>Live</a>")
                 if links:
-                    p_header += f"<br/><font size='8' color='#475569'>{' • '.join(links)}</font>"
+                    p_header += f" | <font size='9.5'>{' • '.join(links)}</font>"
 
                 story.append(Paragraph(p_header, item_header_style))
                 for bullet in proj.get('bullets', []):
@@ -227,18 +229,39 @@ class AtsPdfGenerator:
                 degree = edu.get('degree', '')
                 field = edu.get('field', '')
                 inst = edu.get('institution', '')
+                location = edu.get('location', '')
                 start_y = edu.get('start_year')
                 end_y = edu.get('end_year') or 'Present'
                 grade = edu.get('grade', '')
 
-                edu_text = f"<b>{degree}" + (f" in {field}" if field else "") + f"</b> | {inst}"
-                if start_y:
-                    edu_text += f" ({start_y} – {end_y})"
+                degree_text = degree
+                if field:
+                    degree_text += f" in {field}"
                 if grade:
-                    edu_text += f" • Grade/GPA: {grade}"
+                    degree_text += f" — {grade}"
 
-                story.append(Paragraph(edu_text, body_style))
-            story.append(Spacer(1, 4))
+                dates = f"{start_y} – {end_y}" if start_y else ""
+
+                p_inst = Paragraph(f"<b>{inst}</b>", body_style)
+                p_loc = Paragraph(f"<para align='right'>{location}</para>", body_style)
+                p_deg = Paragraph(f"<i>{degree_text}</i>", body_style)
+                p_dates = Paragraph(f"<para align='right'><i>{dates}</i></para>", body_style)
+                
+                data = [
+                    [p_inst, p_loc],
+                    [p_deg, p_dates]
+                ]
+                
+                t = Table(data, colWidths=[400, 140])
+                t.setStyle(TableStyle([
+                    ('VALIGN', (0,0), (-1,-1), 'TOP'),
+                    ('LEFTPADDING', (0,0), (-1,-1), 0),
+                    ('RIGHTPADDING', (0,0), (-1,-1), 0),
+                    ('BOTTOMPADDING', (0,0), (-1,-1), 1),
+                    ('TOPPADDING', (0,0), (-1,-1), 0),
+                ]))
+                story.append(t)
+                story.append(Spacer(1, 6))
 
         # 8. Certifications
         certs = resume_data.get('certifications', [])

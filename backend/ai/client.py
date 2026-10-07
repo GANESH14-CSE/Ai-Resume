@@ -18,89 +18,126 @@ class AIClient:
     """
 
     def __init__(self):
-        self.api_key = getattr(settings, 'OPENAI_API_KEY', '')
+        self.provider = getattr(settings, 'LLM_PROVIDER', 'openai')
+        self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', '')
+        self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
+        
+        # Select active key based on provider
+        if self.provider.lower() == 'gemini':
+            self.api_key = self.gemini_api_key
+        else:
+            self.api_key = self.openai_api_key
+            
         self.model = getattr(settings, 'LLM_MODEL', 'gpt-4o-mini')
         self.temperature = getattr(settings, 'LLM_TEMPERATURE', 0.2)
-        self.mock_mode = getattr(settings, 'MOCK_LLM', False) or not bool(self.api_key)
+        self.mock_mode = getattr(settings, 'MOCK_LLM', False) or (not bool(self.openai_api_key) and not bool(self.gemini_api_key))
 
-    def _get_openai_client(self):
+    def _get_openai_client(self, provider_override=None):
+        provider = provider_override or self.provider
+        api_key = self.gemini_api_key if provider.lower() == 'gemini' else self.openai_api_key
+        
+        if not api_key:
+            return None
+            
         try:
             from openai import OpenAI
-            return OpenAI(api_key=self.api_key)
+            if provider.lower() == 'gemini':
+                return OpenAI(api_key=api_key, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
+            return OpenAI(api_key=api_key)
         except Exception as e:
-            logger.error(f"Error initializing OpenAI client: {e}")
+            logger.error(f"Error initializing {provider} client: {e}")
             return None
+
+    def _execute_chat_completion(self, messages, temperature, response_format=None):
+        providers = [self.provider.lower()]
+        fallback = 'openai' if self.provider.lower() == 'gemini' else 'gemini'
+        
+        if fallback == 'openai' and self.openai_api_key:
+            providers.append('openai')
+        elif fallback == 'gemini' and self.gemini_api_key:
+            providers.append('gemini')
+            
+        last_error = None
+        
+        for provider in providers:
+            client = self._get_openai_client(provider)
+            if not client:
+                continue
+                
+            try:
+                # Assign default models per provider if falling back
+                model = self.model if provider == self.provider.lower() else ("gpt-4o-mini" if provider == "openai" else "gemini-1.5-flash")
+                
+                kwargs = {
+                    "model": model,
+                    "messages": messages,
+                    "temperature": temperature
+                }
+                if response_format:
+                    kwargs["response_format"] = response_format
+                    
+                response = client.chat.completions.create(**kwargs)
+                return response.choices[0].message.content
+            except Exception as e:
+                logger.warning(f"LLM call failed with {provider}: {e}. Trying fallback if available...")
+                last_error = e
+                
+        raise Exception(f"All LLM providers failed. Last error: {last_error}")
 
     def analyze_screenshot(self, image_base64: str) -> dict:
         """Uses Vision model to extract JD and company name from a screenshot."""
-        if self.mock_mode or not self.api_key:
-            return self._fallback_analyze_jd("Software Engineer")
-
-        client = self._get_openai_client()
-        if not client:
+        if self.mock_mode:
             return self._fallback_analyze_jd("Software Engineer")
 
         try:
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Extract the company name, job title, and key requirements from this job posting screenshot. Return as JSON with keys: company, job_title, required_skills, nice_to_have_skills, keywords, responsibilities, summary."},
-                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
-                        ]
-                    }
-                ],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            return json.loads(response.choices[0].message.content)
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Extract the company name, job title, and key requirements from this job posting screenshot. Return as JSON with keys: company, job_title, required_skills, nice_to_have_skills, keywords, responsibilities, summary."},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
+                    ]
+                }
+            ]
+            content = self._execute_chat_completion(messages, temperature=0.1, response_format={"type": "json_object"})
+            return json.loads(content)
         except Exception as e:
             logger.error(f"Vision JD analysis failed: {e}")
             return self._fallback_analyze_jd("Software Engineer")
 
     def generate_cover_letter(self, master_profile: dict, job_analysis: dict) -> str:
-        if self.mock_mode or not self.api_key:
-            return f"Dear Hiring Manager,\n\nI am writing to apply for the {job_analysis.get('job_title', 'Role')} position at {job_analysis.get('company', 'your company')}. Please find my resume attached.\n\nBest,\n{master_profile.get('name', 'Candidate')}"
+        if self.mock_mode:
+            return f"Dear Hiring Team,\n\nI am writing to apply for the {job_analysis.get('job_title', 'Role')} position at {job_analysis.get('company', 'your company')}. Please find my resume attached.\n\nBest,\n{master_profile.get('name', 'Candidate')}"
             
-        client = self._get_openai_client()
-        if not client:
-            return "Please find my resume attached."
-            
-        prompt = f"Write a professional, concise, and highly converting cold email/cover letter for {master_profile.get('name')} applying for {job_analysis.get('job_title')} at {job_analysis.get('company')}. Use facts from this profile: {json.dumps(master_profile)} and target these requirements: {json.dumps(job_analysis)}."
+        prompt = (
+            f"Write a professional, concise, and highly converting cold email/cover letter for {master_profile.get('name')} "
+            f"applying for {job_analysis.get('job_title')} at {job_analysis.get('company')}. "
+            f"RULES:\n"
+            f"1. Always start the email exactly with 'Dear Hiring Team,'.\n"
+            f"2. Do NOT put portfolio or GitHub links inline within the paragraphs.\n"
+            f"3. Place all links (LinkedIn, GitHub, Portfolio) neatly at the very bottom of the email, after the signature block.\n"
+            f"Use facts from this profile: {json.dumps(master_profile, default=str)} and target these requirements: {json.dumps(job_analysis, default=str)}."
+        )
         try:
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7
-            )
-            return response.choices[0].message.content
+            messages = [{"role": "user", "content": prompt}]
+            return self._execute_chat_completion(messages, temperature=0.7)
         except Exception as e:
+            logger.error(f"Cover letter generation failed: {e}")
             return "Please find my resume attached."
 
     def analyze_job_description(self, jd_text: str) -> dict:
         """
         Parses Job Description text and returns structured requirements.
         """
-        if self.mock_mode or not self.api_key:
-            return self._fallback_analyze_jd(jd_text)
-
-        client = self._get_openai_client()
-        if not client:
+        if self.mock_mode:
             return self._fallback_analyze_jd(jd_text)
 
         try:
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": JD_ANALYSIS_SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Analyze this Job Description:\n\n{jd_text}"}
-                ],
-                temperature=self.temperature,
-                response_format={"type": "json_object"}
-            )
-            content = response.choices[0].message.content
+            messages = [
+                {"role": "system", "content": JD_ANALYSIS_SYSTEM_PROMPT},
+                {"role": "user", "content": f"Analyze this Job Description:\n\n{jd_text}"}
+            ]
+            content = self._execute_chat_completion(messages, temperature=self.temperature, response_format={"type": "json_object"})
             return json.loads(content)
         except Exception as e:
             logger.error(f"OpenAI JD analysis failed: {e}. Falling back to deterministic parser.")
@@ -110,24 +147,15 @@ class AIClient:
         """
         Parses raw text extracted from an uploaded resume (PDF/DOCX/TXT) into structured resume JSON.
         """
-        if self.mock_mode or not self.api_key:
-            return self._fallback_parse_resume(raw_text)
-
-        client = self._get_openai_client()
-        if not client:
+        if self.mock_mode:
             return self._fallback_parse_resume(raw_text)
 
         try:
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": RESUME_PARSE_SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Extract structured facts from this resume text:\n\n{raw_text[:12000]}"}
-                ],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            content = response.choices[0].message.content
+            messages = [
+                {"role": "system", "content": RESUME_PARSE_SYSTEM_PROMPT},
+                {"role": "user", "content": f"Extract structured facts from this resume text:\n\n{raw_text[:12000]}"}
+            ]
+            content = self._execute_chat_completion(messages, temperature=0.1, response_format={"type": "json_object"})
             return json.loads(content)
         except Exception as e:
             logger.error(f"OpenAI resume parsing failed: {e}. Using fallback parser.")
@@ -141,12 +169,10 @@ class AIClient:
         if not job_analysis:
             job_analysis = self.analyze_job_description(jd_text)
 
-        if self.mock_mode or not self.api_key:
-            return self._fallback_compare_and_suggest(resume_data, job_analysis)
-
-        client = self._get_openai_client()
-        if not client:
-            return self._fallback_compare_and_suggest(resume_data, job_analysis)
+        if self.mock_mode:
+            res = self._fallback_compare_and_suggest(resume_data, job_analysis)
+            res["job_analysis"] = job_analysis
+            return res
 
         payload = {
             "existing_resume": resume_data,
@@ -154,16 +180,11 @@ class AIClient:
         }
 
         try:
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": RESUME_SUGGESTIONS_SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Compare this resume with the Job Description requirements:\n\n{json.dumps(payload, indent=2, default=str)}"}
-                ],
-                temperature=0.2,
-                response_format={"type": "json_object"}
-            )
-            content = response.choices[0].message.content
+            messages = [
+                {"role": "system", "content": RESUME_SUGGESTIONS_SYSTEM_PROMPT},
+                {"role": "user", "content": f"Compare this resume with the Job Description requirements:\n\n{json.dumps(payload, indent=2, default=str)}"}
+            ]
+            content = self._execute_chat_completion(messages, temperature=0.2, response_format={"type": "json_object"})
             result = json.loads(content)
             result["job_analysis"] = job_analysis
             return result
@@ -203,42 +224,33 @@ class AIClient:
                         })
                         existing_skill_names.add(sug_name.lower())
 
-        if self.mock_mode or not self.api_key:
+        if self.mock_mode:
             raw_resume = self._fallback_tailor_resume(augmented_profile, job_analysis, matched_skills)
         else:
-            client = self._get_openai_client()
-            if not client:
+            prompt_payload = {
+                "master_profile": augmented_profile,
+                "target_job_requirements": job_analysis,
+                "matched_skills": matched_skills,
+                "missing_skills_to_omit": missing_skills,
+                "approved_customizations": approved_suggestions or []
+            }
+
+            user_prompt = (
+                "Please generate the truthful tailored resume conforming strictly to the requested JSON schema.\n"
+                "Preserve existing work history and projects, incorporate approved customizations, and polish for ATS.\n"
+                "Here is the verified data and target job:\n\n" + json.dumps(prompt_payload, indent=2, default=str)
+            )
+
+            try:
+                messages = [
+                    {"role": "system", "content": RESUME_TAILORING_SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ]
+                content = self._execute_chat_completion(messages, temperature=self.temperature, response_format={"type": "json_object"})
+                raw_resume = json.loads(content)
+            except Exception as e:
+                logger.error(f"OpenAI resume tailoring failed: {e}. Using deterministic fallback.")
                 raw_resume = self._fallback_tailor_resume(augmented_profile, job_analysis, matched_skills)
-            else:
-                prompt_payload = {
-                    "master_profile": augmented_profile,
-                    "target_job_requirements": job_analysis,
-                    "matched_skills": matched_skills,
-                    "missing_skills_to_omit": missing_skills,
-                    "approved_customizations": approved_suggestions or []
-                }
-
-                user_prompt = (
-                    "Please generate the truthful tailored resume conforming strictly to the requested JSON schema.\n"
-                    "Preserve existing work history and projects, incorporate approved customizations, and polish for ATS.\n"
-                    "Here is the verified data and target job:\n\n" + json.dumps(prompt_payload, indent=2, default=str)
-                )
-
-                try:
-                    response = client.chat.completions.create(
-                        model=self.model,
-                        messages=[
-                            {"role": "system", "content": RESUME_TAILORING_SYSTEM_PROMPT},
-                            {"role": "user", "content": user_prompt}
-                        ],
-                        temperature=self.temperature,
-                        response_format={"type": "json_object"}
-                    )
-                    content = response.choices[0].message.content
-                    raw_resume = json.loads(content)
-                except Exception as e:
-                    logger.error(f"OpenAI resume tailoring failed: {e}. Using deterministic fallback.")
-                    raw_resume = self._fallback_tailor_resume(augmented_profile, job_analysis, matched_skills)
 
         # Deterministic Truthfulness Audit & Sanitization
         sanitized_resume, audit_report = TruthfulnessValidator.audit_and_sanitize(raw_resume, augmented_profile)

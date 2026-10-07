@@ -88,7 +88,7 @@ export const History: React.FC = () => {
                     <span>{new Date(resume.created_at).toLocaleDateString()}</span>
                   </span>
                   <span>•</span>
-                  <span className="text-emerald-400">
+                  <span className="text-cyan-400">
                     {resume.matched_skills.length} skills matched
                   </span>
                   <span>•</span>

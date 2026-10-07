@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
-import { Activity, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Activity, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { data: health, isSuccess, isError, isLoading } = useQuery({
@@ -13,7 +13,16 @@ export const Navbar: React.FC = () => {
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between z-10 sticky top-0">
       <div className="flex items-center space-x-3">
-        <span className="text-xs uppercase tracking-wider font-semibold text-slate-500">
+        {/* Mobile Brand Name */}
+        <div className="md:hidden flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <ShieldCheck className="w-5 h-5 text-slate-950 font-bold" />
+          </div>
+          <span className="font-bold text-white tracking-tight">Truthful AI</span>
+        </div>
+
+        {/* Desktop Workspace Label */}
+        <span className="hidden md:inline-block text-xs uppercase tracking-wider font-semibold text-slate-500">
           Personal Single-User Workspace
         </span>
       </div>
@@ -25,7 +34,7 @@ export const Navbar: React.FC = () => {
           <span className="text-slate-400 font-medium">Backend:</span>
           {isLoading && <span className="text-amber-400 animate-pulse">Checking...</span>}
           {isSuccess && (
-            <span className="flex items-center space-x-1 text-emerald-400 font-medium">
+            <span className="flex items-center space-x-1 text-cyan-400 font-medium">
               <CheckCircle2 className="w-3 h-3" />
               <span>{health.status} ({health.llm_provider})</span>
             </span>

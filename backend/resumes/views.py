@@ -428,10 +428,12 @@ class AutoApplySendView(APIView):
 
         email = request.data.get('email')
         role = request.data.get('role')
+        company = request.data.get('company')
         image = request.FILES.get('image')
+        jd_text = request.data.get('text')
 
-        if not email or not role or not image:
-            return Response({"error": "Email, role, and screenshot are required"}, status=400)
+        if not email or not role or (not image and not jd_text):
+            return Response({"error": "Email, role, and screenshot/text are required"}, status=400)
 
         google_creds = GoogleCredentials.objects.filter(user=user).first()
         if not google_creds:
@@ -444,15 +446,16 @@ class AutoApplySendView(APIView):
         profile_data = MasterProfileSerializer(profile_obj).data
 
         try:
-            image_base64 = base64.b64encode(image.read()).decode('utf-8')
-            
             ai_client = AIClient()
-            job_analysis = ai_client.analyze_screenshot(image_base64)
+            if image:
+                image_base64 = base64.b64encode(image.read()).decode('utf-8')
+                job_analysis = ai_client.analyze_screenshot(image_base64)
+            else:
+                job_analysis = ai_client.analyze_job_description(jd_text)
             
             # Override target role from user input
             job_analysis['job_title'] = role
-            if not job_analysis.get('company'):
-                job_analysis['company'] = "Hiring Team"
+            job_analysis['company'] = company or job_analysis.get('company') or "Hiring Team"
                 
             cand_skills = profile_data.get('skills', [])
             jd_req_skills = job_analysis.get('required_skills', [])

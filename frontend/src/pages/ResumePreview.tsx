@@ -49,7 +49,7 @@ export const ResumePreview: React.FC = () => {
   const downloadUrl = api.getPdfDownloadUrl(resume.id);
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10';
+    if (score >= 90) return 'text-cyan-400 border-cyan-500/40 bg-cyan-500/10';
     if (score >= 75) return 'text-brand-400 border-brand-500/40 bg-brand-500/10';
     return 'text-amber-400 border-amber-500/40 bg-amber-500/10';
   };
@@ -150,7 +150,7 @@ export const ResumePreview: React.FC = () => {
               </div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-emerald-400 h-full rounded-full"
+                  className="bg-cyan-400 h-full rounded-full"
                   style={{ width: `${((breakdown?.keyword_score || 0) / 25) * 100}%` }}
                 />
               </div>
@@ -172,10 +172,10 @@ export const ResumePreview: React.FC = () => {
             <div>
               <div className="flex justify-between text-[11px] mb-1">
                 <span className="text-slate-400">ATS Structure & Formatting</span>
-                <span className="text-emerald-400 font-mono">10.0 / 10 (Optimal)</span>
+                <span className="text-cyan-400 font-mono">10.0 / 10 (Optimal)</span>
               </div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-emerald-400 h-full rounded-full w-full" />
+                <div className="bg-cyan-400 h-full rounded-full w-full" />
               </div>
             </div>
           </div>
@@ -185,7 +185,7 @@ export const ResumePreview: React.FC = () => {
         <div className="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-5">
           {/* Matched Skills */}
           <div>
-            <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-2">
               <CheckCircle2 className="w-4 h-4" />
               <span>Matched Skills ({resume.matched_skills.length})</span>
             </div>
@@ -199,7 +199,7 @@ export const ResumePreview: React.FC = () => {
                 {resume.matched_skills.map((s) => (
                   <span
                     key={s}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs font-medium flex items-center space-x-1"
+                    className="px-2.5 py-1 rounded-lg bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs font-medium flex items-center space-x-1"
                   >
                     <span>✓</span>
                     <span>{s}</span>
@@ -219,7 +219,7 @@ export const ResumePreview: React.FC = () => {
               Mentioned in the Job Description but NOT in your profile. <strong className="text-slate-200">Omitted from your resume for strict honesty:</strong>
             </p>
             {resume.missing_skills.length === 0 ? (
-              <p className="text-xs text-emerald-400 font-semibold">
+              <p className="text-xs text-cyan-400 font-semibold">
                 Perfect! No missing core skills from this job description.
               </p>
             ) : (

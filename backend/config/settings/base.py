@@ -138,6 +138,7 @@ CORS_ALLOW_CREDENTIALS = True
 # AI & LLM Settings
 LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'openai')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 LLM_MODEL = os.getenv('LLM_MODEL', 'gpt-4o-mini')
 LLM_TEMPERATURE = float(os.getenv('LLM_TEMPERATURE', '0.2'))

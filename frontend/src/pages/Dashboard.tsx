@@ -44,7 +44,7 @@ export const Dashboard: React.FC = () => {
             <span>Strict Truthfulness Guaranteed • Real Personal Data Only</span>
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
-            AI-Driven Resume Tailor with <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-300">Zero Hallucinations</span>
+            AI-Driven Resume Tailor with <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-cyan-300">Zero Hallucinations</span>
           </h1>
           <p className="text-slate-300 text-sm md:text-base leading-relaxed">
             Your Master Profile is the single ground truth. Paste any Job Description to automatically select relevant skills, rewrite facts professionally, calculate honest ATS compatibility, and download an ATS-ready PDF.
@@ -136,9 +136,9 @@ export const Dashboard: React.FC = () => {
         <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-semibold uppercase tracking-wider">ATS Engine</span>
-            <Database className="w-4 h-4 text-emerald-400" />
+            <Database className="w-4 h-4 text-cyan-400" />
           </div>
-          <div className="text-lg font-bold text-emerald-400 flex items-center space-x-1.5">
+          <div className="text-lg font-bold text-cyan-400 flex items-center space-x-1.5">
             <CheckCircle className="w-4 h-4" />
             <span>Ready (v{health?.version || '1.0.0'})</span>
           </div>

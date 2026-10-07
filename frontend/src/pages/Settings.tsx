@@ -39,7 +39,7 @@ export const Settings: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* API Key Security Card */}
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
-          <div className="flex items-center space-x-2 text-emerald-400">
+          <div className="flex items-center space-x-2 text-cyan-400">
             <Lock className="w-4 h-4" />
             <span className="text-xs font-bold uppercase tracking-wider">Server-Side Security</span>
           </div>
@@ -48,7 +48,7 @@ export const Settings: React.FC = () => {
             Your OpenAI API key is stored exclusively in the server-side Django backend environment (<code className="text-brand-400 bg-slate-950 px-1 py-0.5 rounded">backend/.env</code>).
             It is never sent to the browser, JavaScript bundle, or local storage.
           </p>
-          <div className="pt-2 flex items-center space-x-2 text-[11px] text-emerald-400 font-semibold">
+          <div className="pt-2 flex items-center space-x-2 text-[11px] text-cyan-400 font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Strict Secret Isolation Active</span>
           </div>
@@ -72,7 +72,7 @@ export const Settings: React.FC = () => {
             </div>
             <div className="flex justify-between py-1 border-b border-slate-800">
               <span className="text-slate-400">Mock Mode</span>
-              <span className="font-mono text-emerald-400">{health?.mock_llm ? 'Active' : 'Disabled (Live)'}</span>
+              <span className="font-mono text-cyan-400">{health?.mock_llm ? 'Active' : 'Disabled (Live)'}</span>
             </div>
             <div className="flex justify-between py-1">
               <span className="text-slate-400">Response Mode</span>
@@ -91,7 +91,7 @@ export const Settings: React.FC = () => {
           <p className="text-xs text-slate-300 leading-relaxed">
             Status:{' '}
             {profileData?.exists ? (
-              <span className="text-emerald-400 font-semibold">
+              <span className="text-cyan-400 font-semibold">
                 Configured ({profileData.profile?.name} • {profileData.profile?.skills.length} skills)
               </span>
             ) : (
@@ -105,7 +105,7 @@ export const Settings: React.FC = () => {
 
         {/* Truthfulness Audit Protocol */}
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
-          <div className="flex items-center space-x-2 text-emerald-400">
+          <div className="flex items-center space-x-2 text-cyan-400">
             <ShieldCheck className="w-4 h-4" />
             <span className="text-xs font-bold uppercase tracking-wider">Truthfulness Validator</span>
           </div>
@@ -114,7 +114,7 @@ export const Settings: React.FC = () => {
             Every AI-generated resume passes through a deterministic validator that verifies each skill, company, and project against the Master Profile whitelist.
             Any unauthorized claims or fabricated percentages are automatically stripped.
           </p>
-          <div className="flex items-center space-x-1.5 text-[11px] text-emerald-400 font-semibold">
+          <div className="flex items-center space-x-1.5 text-[11px] text-cyan-400 font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Zero Hallucination Enforcement: ON</span>
           </div>
