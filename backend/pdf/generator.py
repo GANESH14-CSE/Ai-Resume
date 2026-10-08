@@ -29,8 +29,8 @@ class AtsPdfGenerator:
             pagesize=letter,
             leftMargin=36,
             rightMargin=36,
-            topMargin=24,
-            bottomMargin=24
+            topMargin=16,
+            bottomMargin=16
         )
 
         styles = getSampleStyleSheet()
@@ -66,8 +66,8 @@ class AtsPdfGenerator:
             leading=14,
             textColor=colors.HexColor('#0f172a'),
             textTransform='uppercase',
-            spaceBefore=8,
-            spaceAfter=2
+            spaceBefore=6,
+            spaceAfter=1
         )
 
         body_style = ParagraphStyle(
@@ -75,9 +75,9 @@ class AtsPdfGenerator:
             parent=styles['Normal'],
             fontName='Helvetica',
             fontSize=9.5,
-            leading=13,
+            leading=12.5,
             textColor=colors.HexColor('#1e293b'),
-            spaceAfter=4
+            spaceAfter=3
         )
 
         bullet_style = ParagraphStyle(
@@ -85,11 +85,11 @@ class AtsPdfGenerator:
             parent=styles['Normal'],
             fontName='Helvetica',
             fontSize=9,
-            leading=12.5,
+            leading=12,
             textColor=colors.HexColor('#1e293b'),
             leftIndent=14,
             firstLineIndent=-10,
-            spaceAfter=2
+            spaceAfter=1
         )
 
         item_header_style = ParagraphStyle(
@@ -97,10 +97,10 @@ class AtsPdfGenerator:
             parent=styles['Normal'],
             fontName='Helvetica-Bold',
             fontSize=9.5,
-            leading=13,
+            leading=12.5,
             textColor=colors.HexColor('#0f172a'),
-            spaceBefore=3,
-            spaceAfter=1
+            spaceBefore=2,
+            spaceAfter=0.5
         )
 
         story = []
@@ -132,25 +132,25 @@ class AtsPdfGenerator:
         if header.get('location'):
             contact_parts.append(header['location'])
         if header.get('linkedin'):
-            contact_parts.append(f"LinkedIn: {header['linkedin']}")
+            contact_parts.append(f"<a href='{header['linkedin']}' color='#2563eb'>LinkedIn</a>")
         if header.get('github'):
-            contact_parts.append(f"GitHub: {header['github']}")
+            contact_parts.append(f"<a href='{header['github']}' color='#2563eb'>GitHub</a>")
         if header.get('portfolio'):
-            contact_parts.append(f"Portfolio: {header['portfolio']}")
+            contact_parts.append(f"<a href='{header['portfolio']}' color='#2563eb'>Portfolio</a>")
 
         if contact_parts:
             story.append(Paragraph(" • ".join(contact_parts), contact_style))
 
         def add_section_header(title_text):
             story.append(Paragraph(title_text, section_heading_style))
-            story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor('#94a3b8'), spaceAfter=5, spaceBefore=1))
+            story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor('#94a3b8'), spaceAfter=4, spaceBefore=1))
 
         # 3. Summary
         summary = resume_data.get('summary')
         if summary:
             add_section_header("Professional Summary")
             story.append(Paragraph(summary, body_style))
-            story.append(Spacer(1, 4))
+            story.append(Spacer(1, 3))
 
         # 4. Technical Skills
         skills = resume_data.get('skills', {})
@@ -169,7 +169,7 @@ class AtsPdfGenerator:
                 if items:
                     skills_line = f"<b>{label}:</b> " + ", ".join(items)
                     story.append(Paragraph(skills_line, body_style))
-            story.append(Spacer(1, 4))
+            story.append(Spacer(1, 3))
 
         # 5. Work Experience
         experiences = resume_data.get('experiences', [])
@@ -189,10 +189,12 @@ class AtsPdfGenerator:
                 if dates:
                     header_text += f" &nbsp;&nbsp;&nbsp;&nbsp; <i>[{dates}]</i>"
 
-                story.append(Paragraph(header_text, item_header_style))
+                exp_block = [Paragraph(header_text, item_header_style)]
                 for bullet in exp.get('bullets', []):
-                    story.append(Paragraph(f"• {bullet}", bullet_style))
-                story.append(Spacer(1, 4))
+                    exp_block.append(Paragraph(f"• {bullet}", bullet_style))
+                exp_block.append(Spacer(1, 3))
+                
+                story.append(KeepTogether(exp_block))
 
         # 6. Projects
         projects = resume_data.get('projects', [])
@@ -205,8 +207,6 @@ class AtsPdfGenerator:
                 p_header = f"<b>{p_name}</b>"
                 if domain:
                     p_header += f" ({domain})"
-                if techs:
-                    p_header += f" | <i>Technologies: {', '.join(techs)}</i>"
 
                 links = []
                 if proj.get('github_url'):
@@ -216,10 +216,14 @@ class AtsPdfGenerator:
                 if links:
                     p_header += f" | <font size='9.5'>{' • '.join(links)}</font>"
 
-                story.append(Paragraph(p_header, item_header_style))
+                proj_block = [Paragraph(p_header, item_header_style)]
+                if techs:
+                    proj_block.append(Paragraph(f"<i>Technologies: {', '.join(techs)}</i>", bullet_style))
                 for bullet in proj.get('bullets', []):
-                    story.append(Paragraph(f"• {bullet}", bullet_style))
-                story.append(Spacer(1, 4))
+                    proj_block.append(Paragraph(f"• {bullet}", bullet_style))
+                proj_block.append(Spacer(1, 3))
+                
+                story.append(KeepTogether(proj_block))
 
         # 7. Education
         education = resume_data.get('education', [])
@@ -248,8 +252,8 @@ class AtsPdfGenerator:
                 p_dates = Paragraph(f"<para align='right'><i>{dates}</i></para>", body_style)
                 
                 data = [
-                    [p_inst, p_loc],
-                    [p_deg, p_dates]
+                    [p_inst, p_dates],
+                    [p_deg, p_loc]
                 ]
                 
                 t = Table(data, colWidths=[400, 140])
@@ -261,7 +265,7 @@ class AtsPdfGenerator:
                     ('TOPPADDING', (0,0), (-1,-1), 0),
                 ]))
                 story.append(t)
-                story.append(Spacer(1, 6))
+                story.append(Spacer(1, 4))
 
         # 8. Certifications
         certs = resume_data.get('certifications', [])
@@ -275,7 +279,7 @@ class AtsPdfGenerator:
                 if date:
                     cert_text += f" ({date})"
                 story.append(Paragraph(f"• {cert_text}", bullet_style))
-            story.append(Spacer(1, 4))
+            story.append(Spacer(1, 3))
 
         # 9. Achievements
         achievements = resume_data.get('achievements', [])

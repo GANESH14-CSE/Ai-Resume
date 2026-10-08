@@ -285,9 +285,9 @@ export const ResumePreview: React.FC = () => {
               {content.header?.email && <span>{content.header.email}</span>}
               {content.header?.phone && <span>• {content.header.phone}</span>}
               {content.header?.location && <span>• {content.header.location}</span>}
-              {content.header?.linkedin && <span>• LinkedIn: {content.header.linkedin}</span>}
-              {content.header?.github && <span>• GitHub: {content.header.github}</span>}
-              {content.header?.portfolio && <span>• {content.header.portfolio}</span>}
+              {content.header?.linkedin && <span>• <a href={content.header.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">LinkedIn</a></span>}
+              {content.header?.github && <span>• <a href={content.header.github} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">GitHub</a></span>}
+              {content.header?.portfolio && <span>• <a href={content.header.portfolio} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">Portfolio</a></span>}
             </div>
           </div>
 
@@ -393,8 +393,8 @@ export const ResumePreview: React.FC = () => {
                     </p>
                     {(proj.github_url || proj.live_url) && (
                       <span className="text-slate-500 text-[11px] space-x-2">
-                        {proj.github_url && <span>GitHub</span>}
-                        {proj.live_url && <span>Demo</span>}
+                        {proj.github_url && <a href={proj.github_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">GitHub</a>}
+                        {proj.live_url && <a href={proj.live_url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-600">Demo/Live</a>}
                       </span>
                     )}
                   </div>
