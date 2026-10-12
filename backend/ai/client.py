@@ -19,16 +19,28 @@ class AIClient:
 
     def __init__(self):
         self.provider = getattr(settings, 'LLM_PROVIDER', 'openai')
-        self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', '')
-        self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '')
+        self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', '').strip()
+        self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', '').strip()
         
-        # Select active key based on provider
+        # Auto-detect if a Google Gemini key was placed in OPENAI_API_KEY
+        if self.openai_api_key.startswith('AIza') and not self.gemini_api_key:
+            self.gemini_api_key = self.openai_api_key
+            self.openai_api_key = ''
+
+        # Auto-switch provider if only one key is configured
+        if not self.openai_api_key and self.gemini_api_key:
+            self.provider = 'gemini'
+        elif self.openai_api_key and not self.gemini_api_key:
+            self.provider = 'openai'
+
+        # Select active key and appropriate default model
         if self.provider.lower() == 'gemini':
             self.api_key = self.gemini_api_key
+            self.model = 'gemini-1.5-flash'
         else:
             self.api_key = self.openai_api_key
+            self.model = getattr(settings, 'LLM_MODEL', 'gpt-4o-mini')
             
-        self.model = getattr(settings, 'LLM_MODEL', 'gpt-4o-mini')
         self.temperature = getattr(settings, 'LLM_TEMPERATURE', 0.2)
         self.mock_mode = getattr(settings, 'MOCK_LLM', False) or (not bool(self.openai_api_key) and not bool(self.gemini_api_key))
 
