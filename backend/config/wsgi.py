@@ -19,8 +19,26 @@ if os.getenv('VERCEL'):
         except Exception:
             pass
 
-from django.core.wsgi import get_wsgi_application
+import traceback
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
-application = get_wsgi_application()
-app = application
+startup_error = None
+try:
+    from django.core.wsgi import get_wsgi_application
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
+    django_app = get_wsgi_application()
+except Exception:
+    startup_error = traceback.format_exc()
+    django_app = None
+
+def app(environ, start_response):
+    if startup_error:
+        start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
+        return [f"DJANGO STARTUP ERROR:\n{startup_error}".encode('utf-8')]
+    try:
+        return django_app(environ, start_response)
+    except Exception:
+        err = traceback.format_exc()
+        start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
+        return [f"DJANGO INVOCATION ERROR:\n{err}".encode('utf-8')]
+
+application = app
