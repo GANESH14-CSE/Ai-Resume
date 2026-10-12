@@ -1,3 +1,4 @@
+
 {
   "version": 2,
   "builds": [
@@ -16,17 +17,18 @@
       }
     }
   ],
- "routes": [
-  {
-    "src": "/api/(.*)",
-    "dest": "backend/config/wsgi.py"
-  },
-  {
-    "src": "/assets/(.*)",
-    "dest": "/assets/$1"
-  },
-  {
-    "src": "/(.*)",
-    "dest": "/index.html"
-  }
-]
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/config/wsgi.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "frontend/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/index.html"
+    }
+  ]
+}
