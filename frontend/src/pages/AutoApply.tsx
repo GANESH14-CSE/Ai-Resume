@@ -75,7 +75,7 @@ export const AutoApply: React.FC = () => {
 
     try {
       if (inputType === 'image') {
-        await api.sendAutoApplication({ email, role, company, image: file });
+        await api.sendAutoApplication({ email, role, company, image: file || undefined });
       } else {
         await api.sendAutoApplication({ email, role, company, text: jdText });
       }

@@ -12,7 +12,6 @@ import {
   FolderGit2,
   GraduationCap,
   Award,
-  Download,
   Upload,
   CheckCircle2,
   AlertCircle,

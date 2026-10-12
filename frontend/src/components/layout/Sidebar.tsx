@@ -4,7 +4,6 @@ import {
   LayoutDashboard, 
   UserCheck, 
   History, 
-  Settings, 
   ShieldCheck, 
   Sparkles,
   Send
