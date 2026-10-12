@@ -30,6 +30,7 @@ wheels/
 .coverage
 htmlcov/
 *.sqlite3
+!backend/db.sqlite3
 media/
 staticfiles/
 
