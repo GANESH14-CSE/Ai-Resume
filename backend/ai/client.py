@@ -36,7 +36,8 @@ class AIClient:
         # Select active key and appropriate default model
         if self.provider.lower() == 'gemini':
             self.api_key = self.gemini_api_key
-            self.model = 'gemini-1.5-flash'
+            configured_model = getattr(settings, 'LLM_MODEL', 'gemini-2.5-flash')
+            self.model = 'gemini-2.5-flash' if '1.5' in configured_model else configured_model
         else:
             self.api_key = self.openai_api_key
             self.model = getattr(settings, 'LLM_MODEL', 'gpt-4o-mini')
@@ -76,23 +77,34 @@ class AIClient:
             if not client:
                 continue
                 
-            try:
-                # Assign default models per provider if falling back
-                model = self.model if provider == self.provider.lower() else ("gpt-4o-mini" if provider == "openai" else "gemini-1.5-flash")
-                
-                kwargs = {
-                    "model": model,
-                    "messages": messages,
-                    "temperature": temperature
-                }
-                if response_format:
-                    kwargs["response_format"] = response_format
-                    
-                response = client.chat.completions.create(**kwargs)
-                return response.choices[0].message.content
-            except Exception as e:
-                logger.warning(f"LLM call failed with {provider}: {e}. Trying fallback if available...")
-                last_error = e
+            # Assign candidate models per provider
+            if provider == "gemini":
+                primary = self.model if self.provider.lower() == "gemini" and self.model.startswith("gemini") else "gemini-2.5-flash"
+                candidates = [primary]
+                if "gemini-2.5-flash" not in candidates:
+                    candidates.append("gemini-2.5-flash")
+            else:
+                primary = self.model if self.provider.lower() == "openai" else "gpt-4o-mini"
+                candidates = [primary]
+
+            for model_name in candidates:
+                try:
+                    kwargs = {
+                        "model": model_name,
+                        "messages": messages,
+                        "temperature": temperature
+                    }
+                    if response_format:
+                        kwargs["response_format"] = response_format
+                        
+                    response = client.chat.completions.create(**kwargs)
+                    return response.choices[0].message.content
+                except Exception as e:
+                    logger.warning(f"LLM call failed with {provider} ({model_name}): {e}")
+                    last_error = e
+                    if "404" in str(e) and len(candidates) > 1 and model_name != candidates[-1]:
+                        continue
+                    break
                 
         raise Exception(f"All LLM providers failed. Last error: {last_error}")
 

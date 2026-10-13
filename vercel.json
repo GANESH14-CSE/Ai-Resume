@@ -5,6 +5,7 @@
       "src": "backend/config/wsgi.py",
       "use": "@vercel/python",
       "config": {
+        "maxDuration": 60,
         "includeFiles": [
           "backend/**"
         ]

@@ -11,7 +11,12 @@ import {
   ApplyAndGeneratePayload
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:8000/api/v1' : '/api/v1');
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL;
+const isLocalhostUrl = rawApiUrl && (rawApiUrl.includes('localhost') || rawApiUrl.includes('127.0.0.1'));
+
+const API_BASE_URL = (import.meta.env.PROD && isLocalhostUrl)
+  ? '/api/v1'
+  : (rawApiUrl || (import.meta.env.DEV ? 'http://localhost:8000/api/v1' : '/api/v1'));
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
