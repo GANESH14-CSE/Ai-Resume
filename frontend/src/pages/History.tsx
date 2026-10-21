@@ -21,13 +21,13 @@ export const History: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 animate-fadeIn">
       {/* Page Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
+          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0">
             <HistoryIcon className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Tailored Resumes History</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Tailored Resumes History</h1>
             <p className="text-xs text-slate-400">
               Access and download previously tailored resumes for each job application.
             </p>
@@ -36,9 +36,9 @@ export const History: React.FC = () => {
 
         <Link
           to="/create"
-          className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-1.5 shadow-lg shadow-brand-500/20 transition-all active:scale-95"
+          className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-brand-500/20 transition-all active:scale-95 shrink-0 self-stretch sm:self-auto"
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
           <span>Tailor New Resume</span>
         </Link>
       </div>

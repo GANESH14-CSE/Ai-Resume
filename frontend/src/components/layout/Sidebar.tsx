@@ -78,7 +78,7 @@ export const Sidebar: React.FC = () => {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center w-16 py-1 transition-all duration-300 relative ${
+                `flex flex-col items-center justify-center flex-1 max-w-[72px] py-1 transition-all duration-300 relative ${
                   isActive
                     ? 'text-brand-400 -translate-y-1'
                     : 'text-slate-500 hover:text-slate-300'

@@ -374,7 +374,7 @@ export const Profile: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center space-x-2 px-4 py-2.5 font-semibold transition-all border-b-2 whitespace-nowrap ${
+              className={`flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 font-semibold transition-all border-b-2 whitespace-nowrap shrink-0 text-xs sm:text-sm ${
                 isActive
                   ? 'border-brand-500 text-brand-400 bg-brand-500/5'
                   : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'

@@ -198,9 +198,9 @@ export const CreateResume: React.FC = () => {
         </div>
 
         {/* Stepper Indicator */}
-        <div className="flex items-center space-x-2 text-xs font-semibold">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs font-semibold overflow-x-auto pb-1 max-w-full">
           <span
-            className={`px-3 py-1 rounded-full border ${
+            className={`px-2.5 sm:px-3 py-1 rounded-full border whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
               currentStep === 'input'
                 ? 'bg-brand-500/20 border-brand-500 text-brand-300'
                 : 'bg-slate-900 border-slate-800 text-slate-400'
@@ -208,9 +208,9 @@ export const CreateResume: React.FC = () => {
           >
             1. Resume & JD
           </span>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
           <span
-            className={`px-3 py-1 rounded-full border ${
+            className={`px-2.5 sm:px-3 py-1 rounded-full border whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
               currentStep === 'review'
                 ? 'bg-brand-500/20 border-brand-500 text-brand-300'
                 : 'bg-slate-900 border-slate-800 text-slate-400'
@@ -218,9 +218,9 @@ export const CreateResume: React.FC = () => {
           >
             2. Review Suggestions
           </span>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
           <span
-            className={`px-3 py-1 rounded-full border ${
+            className={`px-2.5 sm:px-3 py-1 rounded-full border whitespace-nowrap shrink-0 text-[11px] sm:text-xs ${
               currentStep === 'generating'
                 ? 'bg-brand-500/20 border-brand-500 text-brand-300'
                 : 'bg-slate-900 border-slate-800 text-slate-400'
