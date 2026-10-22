@@ -92,7 +92,11 @@ class CurrentUserView(APIView):
             "google_connected": google_connected
         })
 
-from google_auth_oauthlib.flow import Flow
+try:
+    from google_auth_oauthlib.flow import Flow
+except ImportError:
+    Flow = None
+
 from profiles.models import GoogleCredentials
 from profiles.views import get_current_app_user
 
@@ -100,6 +104,8 @@ class GoogleAuthView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        if Flow is None:
+            return Response({"error": "google-auth-oauthlib is not installed on this environment"}, status=500)
         user = get_current_app_user(request)
         if not user:
             return Response({"error": "User not found"}, status=400)
