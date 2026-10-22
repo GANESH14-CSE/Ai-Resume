@@ -71,55 +71,57 @@ export const History: React.FC = () => {
               key={resume.id}
               className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-700 transition-colors"
             >
-              <div className="space-y-1.5">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-1.5 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-base font-bold text-white tracking-tight">{resume.target_role}</h2>
                   {resume.target_company && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium flex items-center space-x-1">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium flex items-center space-x-1 whitespace-nowrap">
                       <Building className="w-3 h-3 text-slate-400" />
                       <span>{resume.target_company}</span>
                     </span>
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
                   <span className="flex items-center space-x-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <span>{new Date(resume.created_at).toLocaleDateString()}</span>
                   </span>
                   <span>•</span>
                   <span className="text-cyan-400">
-                    {resume.matched_skills.length} skills matched
+                    {resume.matched_skills.length} matched
                   </span>
                   <span>•</span>
                   <span className="text-rose-400">
-                    {resume.missing_skills.length} skills missing
+                    {resume.missing_skills.length} missing
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 shrink-0">
-                <div className="text-right mr-2 hidden sm:block">
+              <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+                <div className="text-left sm:text-right mr-1 sm:mr-2">
                   <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">ATS Score</p>
-                  <p className="text-lg font-bold text-brand-400 font-mono">{resume.ats_score}/100</p>
+                  <p className="text-base sm:text-lg font-bold text-brand-400 font-mono">{resume.ats_score}/100</p>
                 </div>
 
-                <a
-                  href={api.getPdfDownloadUrl(resume.id)}
-                  download
-                  title="Download ATS PDF"
-                  className="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                </a>
+                <div className="flex items-center space-x-2">
+                  <a
+                    href={api.getPdfDownloadUrl(resume.id)}
+                    download
+                    title="Download ATS PDF"
+                    className="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                  </a>
 
-                <Link
-                  to={`/resumes/${resume.id}`}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-700 flex items-center space-x-1.5 transition-colors"
-                >
-                  <span>View Details</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                </Link>
+                  <Link
+                    to={`/resumes/${resume.id}`}
+                    className="px-3.5 sm:px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-700 flex items-center space-x-1.5 transition-colors whitespace-nowrap"
+                  >
+                    <span>View Details</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

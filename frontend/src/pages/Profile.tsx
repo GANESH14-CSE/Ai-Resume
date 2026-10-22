@@ -287,36 +287,39 @@ export const Profile: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 animate-fadeIn">
       {/* Top Banner & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800 gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-            <UserCheck className="w-5 h-5" />
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3.5">
+        <div className="flex items-start sm:items-center space-x-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5 sm:mt-0">
+            <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center space-x-2">
-              <span>My Master Profile</span>
-              <span className="px-2 py-0.5 text-[10px] rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                My Master Profile
+              </h1>
+              <span className="px-2 py-0.5 text-[10px] rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium whitespace-nowrap">
                 Single Source of Truth
               </span>
-            </h1>
-            <p className="text-xs text-slate-400">
+            </div>
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
               Only real factual information. The AI tailors your resumes strictly from this verified profile with zero fabrications.
             </p>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
           <label
             title="Upload Resume to Auto-Fill Profile"
-            className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center space-x-1.5 cursor-pointer transition-colors"
+            className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center justify-center space-x-1.5 cursor-pointer transition-colors shrink-0"
           >
             {extractMutation.isPending ? (
               <div className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Upload className="w-3.5 h-3.5 text-slate-400" />
+              <Upload className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             )}
-            <span className="hidden sm:inline">
+            <span className="hidden xs:inline">
               {extractMutation.isPending ? 'Extracting...' : 'Upload Resume'}
             </span>
             <input type="file" accept=".pdf,.docx,.txt" onChange={handleUploadResume} className="hidden" disabled={extractMutation.isPending} />
@@ -325,12 +328,12 @@ export const Profile: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={saveMutation.isPending}
-            className="px-5 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-2 shadow-lg shadow-brand-500/20 transition-all active:scale-95 disabled:opacity-50"
+            className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/20 transition-all active:scale-95 disabled:opacity-50"
           >
             {saveMutation.isPending ? (
               <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Save className="w-3.5 h-3.5" />
+              <Save className="w-3.5 h-3.5 shrink-0" />
             )}
             <span>Save Master Profile</span>
           </button>
@@ -338,20 +341,20 @@ export const Profile: React.FC = () => {
       </div>
 
       {saveSuccess && (
-        <div className="p-4 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs flex items-center justify-between animate-fadeIn">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-cyan-300 text-xs flex items-center justify-between animate-fadeIn">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+            <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Master Profile saved successfully! Your real data is now stored as the single source of truth.</span>
           </div>
         </div>
       )}
 
       {isProfileEmpty && (
-        <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-800/40 text-amber-200 text-xs flex items-start space-x-3">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-amber-950/30 border border-amber-800/40 text-amber-200 text-xs flex items-start space-x-2.5 sm:space-x-3">
           <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-          <div>
+          <div className="min-w-0">
             <p className="font-semibold text-amber-300">Set Up Your Real Profile (First Time Setup)</p>
-            <p className="text-amber-200/80 mt-1">
+            <p className="text-amber-200/80 mt-1 leading-relaxed">
               Please enter your actual personal details, technical skills, work experience, and projects below. Once saved, you can paste any Job Description and automatically generate truthful, tailored resumes!
             </p>
           </div>
@@ -359,14 +362,14 @@ export const Profile: React.FC = () => {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex overflow-x-auto space-x-1 border-b border-slate-800 text-xs pb-px scrollbar-none">
+      <div className="flex overflow-x-auto space-x-1 border-b border-slate-800 text-xs pb-px scrollbar-none -mx-1 px-1">
         {[
-          { id: 'info', label: '1. Personal & Contact', icon: UserCheck },
-          { id: 'skills', label: '2. Technical Skills', icon: Code, count: profile.skills.length },
-          { id: 'experience', label: '3. Experience & Internships', icon: Briefcase, count: profile.experiences.length },
-          { id: 'projects', label: '4. Projects', icon: FolderGit2, count: profile.projects.length },
-          { id: 'education', label: '5. Education & Certs', icon: GraduationCap, count: profile.education.length + profile.certifications.length },
-          { id: 'extra', label: '6. Achievements & Summary', icon: Award },
+          { id: 'info', label: '1. Personal & Contact', shortLabel: '1. Personal', icon: UserCheck },
+          { id: 'skills', label: '2. Technical Skills', shortLabel: '2. Skills', icon: Code, count: profile.skills.length },
+          { id: 'experience', label: '3. Experience & Internships', shortLabel: '3. Experience', icon: Briefcase, count: profile.experiences.length },
+          { id: 'projects', label: '4. Projects', shortLabel: '4. Projects', icon: FolderGit2, count: profile.projects.length },
+          { id: 'education', label: '5. Education & Certs', shortLabel: '5. Education', icon: GraduationCap, count: profile.education.length + profile.certifications.length },
+          { id: 'extra', label: '6. Achievements & Summary', shortLabel: '6. Extras', icon: Award },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -374,16 +377,19 @@ export const Profile: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 font-semibold transition-all border-b-2 whitespace-nowrap shrink-0 text-xs sm:text-sm ${
+              className={`flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-2 sm:py-2.5 font-semibold transition-all border-b-2 whitespace-nowrap shrink-0 text-xs sm:text-sm ${
                 isActive
                   ? 'border-brand-500 text-brand-400 bg-brand-500/5'
                   : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
+              <Icon className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+              </span>
               {typeof tab.count === 'number' && (
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${isActive ? 'bg-brand-500/20 text-brand-300' : 'bg-slate-800 text-slate-400'}`}>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${isActive ? 'bg-brand-500/20 text-brand-300' : 'bg-slate-800 text-slate-400'}`}>
                   {tab.count}
                 </span>
               )}
@@ -393,11 +399,12 @@ export const Profile: React.FC = () => {
       </div>
 
       {/* TAB 1: PERSONAL & CONTACT */}
+      {/* TAB 1: PERSONAL & CONTACT */}
       {activeTab === 'info' && (
         <div className="space-y-6">
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Basic Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">Full Real Name *</label>
                 <input
@@ -455,9 +462,9 @@ export const Profile: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Profiles & Portfolios</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1">LinkedIn URL</label>
                 <input
@@ -493,7 +500,7 @@ export const Profile: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-2">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-2">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Master Career Summary</h2>
             <p className="text-xs text-slate-400">
               Provide your real core career background and strengths. When tailoring resumes, the AI will adapt this summary for specific job roles while strictly adhering to the facts written here.
@@ -512,8 +519,8 @@ export const Profile: React.FC = () => {
       {/* TAB 2: TECHNICAL SKILLS */}
       {activeTab === 'skills' && (
         <div className="space-y-6">
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
               <div>
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Add Real Skills</h2>
                 <p className="text-xs text-slate-400">
@@ -522,11 +529,11 @@ export const Profile: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 pt-2">
               <select
                 value={newSkillCategory}
                 onChange={(e) => setNewSkillCategory(e.target.value as SkillCategory)}
-                className="px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-brand-500"
+                className="w-full sm:w-auto px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-brand-500"
               >
                 <option value="language">Programming Language</option>
                 <option value="framework">Framework / Library</option>
@@ -541,13 +548,13 @@ export const Profile: React.FC = () => {
                 value={newSkillName}
                 onChange={(e) => setNewSkillName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addSkill()}
-                className="flex-1 min-w-[200px] px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-brand-500"
+                className="w-full sm:flex-1 min-w-0 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-brand-500"
               />
 
               <button
                 type="button"
                 onClick={addSkill}
-                className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-1.5 transition-all"
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Skill</span>
@@ -566,7 +573,7 @@ export const Profile: React.FC = () => {
               other: 'Other Technical Skills',
             };
             return (
-              <div key={cat} className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+              <div key={cat} className="bg-slate-900/60 border border-slate-800 rounded-xl p-3.5 sm:p-5 space-y-2.5 sm:space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
                     <span>{titles[cat]}</span>
@@ -606,19 +613,19 @@ export const Profile: React.FC = () => {
       {/* TAB 3: WORK EXPERIENCE & INTERNSHIPS */}
       {activeTab === 'experience' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">
                 Work Experience & Internships
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Enter your real career history. The AI will polish bullet points with strong action verbs and ATS keywords while strictly preserving verified metrics.
               </p>
             </div>
             <button
               type="button"
               onClick={addExperience}
-              className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-1.5 transition-all"
+              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Experience</span>
@@ -638,7 +645,7 @@ export const Profile: React.FC = () => {
             </div>
           ) : (
             profile.experiences.map((exp, idx) => (
-              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4 relative">
+              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4 relative">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-2">
                     <span className="w-6 h-6 rounded-full bg-slate-800 text-brand-400 flex items-center justify-center text-xs font-mono font-bold">
@@ -657,7 +664,7 @@ export const Profile: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-medium text-slate-300 mb-1">Company / Organization *</label>
                     <input
@@ -758,17 +765,17 @@ export const Profile: React.FC = () => {
       {/* TAB 4: PROJECTS */}
       {activeTab === 'projects' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Real Projects</h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Personal or academic projects. For each job application, the AI will prioritize the projects with technologies matching the Job Description.
               </p>
             </div>
             <button
               type="button"
               onClick={addProject}
-              className="px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-1.5 transition-all"
+              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Project</span>
@@ -788,7 +795,7 @@ export const Profile: React.FC = () => {
             </div>
           ) : (
             profile.projects.map((proj, idx) => (
-              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-2">
                     <span className="w-6 h-6 rounded-full bg-slate-800 text-brand-400 flex items-center justify-center text-xs font-mono font-bold">
@@ -804,7 +811,7 @@ export const Profile: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-medium text-slate-300 mb-1">Project Name *</label>
                     <input
@@ -896,15 +903,15 @@ export const Profile: React.FC = () => {
         <div className="space-y-8">
           {/* Education */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Education</h2>
-                <p className="text-xs text-slate-400">Degrees, colleges, and academic credentials.</p>
+                <p className="text-xs text-slate-400 mt-0.5">Degrees, colleges, and academic credentials.</p>
               </div>
               <button
                 type="button"
                 onClick={addEducation}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center space-x-1.5"
+                className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center space-x-1.5 shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Education</span>
@@ -912,7 +919,7 @@ export const Profile: React.FC = () => {
             </div>
 
             {profile.education.map((edu, idx) => (
-              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-3.5 sm:p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white">Degree #{idx + 1}</span>
                   <button onClick={() => removeEducation(idx)} className="text-slate-500 hover:text-rose-400">
@@ -987,15 +994,15 @@ export const Profile: React.FC = () => {
 
           {/* Certifications */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Certifications</h2>
-                <p className="text-xs text-slate-400">Industry certifications and credentials.</p>
+                <p className="text-xs text-slate-400 mt-0.5">Industry certifications and credentials.</p>
               </div>
               <button
                 type="button"
                 onClick={addCertification}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center space-x-1.5"
+                className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center space-x-1.5 shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Certification</span>
@@ -1003,7 +1010,7 @@ export const Profile: React.FC = () => {
             </div>
 
             {profile.certifications.map((c, idx) => (
-              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-3.5 sm:p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white">Certification #{idx + 1}</span>
                   <button onClick={() => removeCertification(idx)} className="text-slate-500 hover:text-rose-400">
@@ -1052,17 +1059,17 @@ export const Profile: React.FC = () => {
       {activeTab === 'extra' && (
         <div className="space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">
                   Key Achievements & Honors
                 </h2>
-                <p className="text-xs text-slate-400">Competitions, hackathons, awards, and notable milestones.</p>
+                <p className="text-xs text-slate-400 mt-0.5">Competitions, hackathons, awards, and notable milestones.</p>
               </div>
               <button
                 type="button"
                 onClick={addAchievement}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center space-x-1.5"
+                className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center space-x-1.5 shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Achievement</span>
@@ -1070,7 +1077,7 @@ export const Profile: React.FC = () => {
             </div>
 
             {profile.achievements.map((ach, idx) => (
-              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+              <div key={idx} className="bg-slate-900/60 border border-slate-800 rounded-xl p-3.5 sm:p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white">Achievement #{idx + 1}</span>
                   <button onClick={() => removeAchievement(idx)} className="text-slate-500 hover:text-rose-400">
@@ -1103,7 +1110,7 @@ export const Profile: React.FC = () => {
             ))}
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-2">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-2">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-300">
               Other Relevant Information
             </h2>
@@ -1137,9 +1144,25 @@ export const Profile: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Save Bar */}
-      <div className="fixed bottom-6 right-8 z-40 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-2.5 rounded-2xl shadow-2xl flex items-center space-x-3">
-        <span className="text-xs text-slate-300 pl-2 hidden sm:inline">
+      {/* Mobile Bottom Save Button */}
+      <div className="sm:hidden pt-4 pb-10">
+        <button
+          onClick={handleSave}
+          disabled={saveMutation.isPending}
+          className="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/25 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {saveMutation.isPending ? (
+            <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          <span>Save Master Profile</span>
+        </button>
+      </div>
+
+      {/* Floating Save Bar - hidden on mobile so it doesn't collide with the fixed mobile bottom nav */}
+      <div className="hidden sm:flex fixed bottom-6 right-8 z-40 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-2.5 rounded-2xl shadow-2xl items-center space-x-3">
+        <span className="text-xs text-slate-300 pl-2">
           {profile.name ? `Editing: ${profile.name}` : 'Unsaved Profile'}
         </span>
         <button

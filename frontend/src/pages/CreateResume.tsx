@@ -182,16 +182,16 @@ export const CreateResume: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20 animate-fadeIn">
       {/* Top Header */}
-      <div className="pb-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-            <Sparkles className="w-5 h-5" />
+      <div className="pb-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+        <div className="flex items-start sm:items-center space-x-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5 sm:mt-0">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center space-x-2">
-              <span>Create & Customize Resume</span>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Create & Customize Resume
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
               Use your existing resume, paste a JD, review smart recommendations, and export a customized ATS PDF.
             </p>
           </div>
@@ -237,23 +237,23 @@ export const CreateResume: React.FC = () => {
       {currentStep === 'input' && (
         <div className="space-y-6">
           {/* SECTION 1: RESUME SELECTION */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider text-slate-200">
                   Step 1: Select or Upload Existing Resume
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 mt-0.5">
                   Reuse your existing resume without typing everything from scratch.
                 </p>
               </div>
 
               {/* Source Tabs */}
-              <div className="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs">
+              <div className="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs w-full sm:w-auto justify-between sm:justify-start">
                 <button
                   type="button"
                   onClick={() => setResumeSource('profile')}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                  className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
                     resumeSource === 'profile'
                       ? 'bg-brand-500 text-slate-950 shadow-sm'
                       : 'text-slate-400 hover:text-white'
@@ -264,7 +264,7 @@ export const CreateResume: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setResumeSource('upload')}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                  className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
                     resumeSource === 'upload'
                       ? 'bg-brand-500 text-slate-950 shadow-sm'
                       : 'text-slate-400 hover:text-white'
@@ -275,7 +275,7 @@ export const CreateResume: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setResumeSource('paste')}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                  className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
                     resumeSource === 'paste'
                       ? 'bg-brand-500 text-slate-950 shadow-sm'
                       : 'text-slate-400 hover:text-white'
@@ -291,18 +291,18 @@ export const CreateResume: React.FC = () => {
               <div>
                 {hasMasterProfile ? (
                   <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                    <div className="flex items-start sm:items-center space-x-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5 sm:mt-0">
                         <CheckCircle2 className="w-5 h-5" />
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-bold text-white text-sm">{masterProfile?.name}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium whitespace-nowrap">
                             Saved Source of Truth
                           </span>
                         </div>
-                        <p className="text-slate-400 mt-0.5">
+                        <p className="text-slate-400 mt-0.5 leading-relaxed">
                           {masterProfile?.title} • {masterProfile?.skills.length || 0} skills •{' '}
                           {masterProfile?.experiences.length || 0} experiences •{' '}
                           {masterProfile?.projects.length || 0} projects
@@ -427,7 +427,7 @@ export const CreateResume: React.FC = () => {
           </div>
 
           {/* SECTION 2: JOB DESCRIPTION */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold text-slate-200 uppercase tracking-wider">
                 Step 2: Enter or Paste Job Description (JD) *
@@ -442,7 +442,7 @@ export const CreateResume: React.FC = () => {
               placeholder={`Paste the Job Description here (plain text, copied words, or requirements list)...\n\nExample:\nWe are hiring a Python / Django Developer. Key requirements:\n- 3+ years Python & Django REST framework\n- PostgreSQL and Redis caching\n- Docker & CI/CD pipeline experience\n- Collaborative team player`}
               value={jdText}
               onChange={(e) => setJdText(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-mono leading-relaxed focus:outline-none focus:border-brand-500 placeholder-slate-600"
+              className="w-full px-3.5 sm:px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-mono leading-relaxed focus:outline-none focus:border-brand-500 placeholder-slate-600"
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -485,17 +485,17 @@ export const CreateResume: React.FC = () => {
                 (resumeSource === 'profile' && !hasMasterProfile) ||
                 (resumeSource !== 'profile' && !parsedCustomResume)
               }
-              className="px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm flex items-center space-x-2 shadow-xl shadow-brand-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-xl shadow-brand-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               {compareMutation.isPending ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-slate-950 shrink-0" />
                   <span>Analyzing Resume & Comparing with JD...</span>
                 </>
               ) : (
                 <>
                   <span>Analyze Resume & Compare with JD</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 shrink-0" />
                 </>
               )}
             </button>
@@ -666,11 +666,11 @@ export const CreateResume: React.FC = () => {
           </div>
 
           {/* Action Button: Apply & Generate Final PDF */}
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
             <button
               type="button"
               onClick={() => setCurrentStep('input')}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center space-x-1.5"
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center justify-center space-x-1.5"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -683,11 +683,11 @@ export const CreateResume: React.FC = () => {
                 generateMutation.mutate();
               }}
               disabled={generateMutation.isPending}
-              className="px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-sm flex items-center space-x-2.5 shadow-xl shadow-brand-500/25 transition-all active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 sm:space-x-2.5 shadow-xl shadow-brand-500/25 transition-all active:scale-95 cursor-pointer text-center"
             >
-              <Sparkles className="w-4 h-4 text-slate-950" />
+              <Sparkles className="w-4 h-4 text-slate-950 shrink-0" />
               <span>Apply Suggestions & Generate ATS PDF</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 shrink-0" />
             </button>
           </div>
         </div>

@@ -94,14 +94,14 @@ export const AutoApply: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20 animate-fadeIn">
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800 gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-            <Send className="w-5 h-5" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3.5">
+        <div className="flex items-start sm:items-center space-x-3 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5 sm:mt-0">
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Auto Apply (Gmail)</h1>
-            <p className="text-xs text-slate-400">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Auto Apply (Gmail)</h1>
+            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
               Provide the job posting via screenshot or text. We'll tailor your resume and email the recruiter.
             </p>
           </div>

@@ -57,47 +57,47 @@ export const ResumePreview: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20 animate-fadeIn">
       {/* Top Bar Navigation & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div className="flex items-center space-x-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pb-4 border-b border-slate-800">
+        <div className="flex items-start sm:items-center space-x-3 min-w-0">
           <Link
             to="/history"
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors shrink-0 mt-0.5 sm:mt-0"
             title="Back to History"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-bold text-white tracking-tight">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                 {resume.target_role}
               </h1>
               {resume.target_company && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium whitespace-nowrap">
                   @{resume.target_company}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
               Generated on {new Date(resume.created_at).toLocaleDateString()} • ATS Single-Column Format
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
           <Link
             to="/create"
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center space-x-1.5"
+            className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center justify-center space-x-1.5 whitespace-nowrap"
           >
-            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+            <Sparkles className="w-3.5 h-3.5 text-brand-400 shrink-0" />
             <span>Tailor Another JD</span>
           </Link>
 
           <a
             href={downloadUrl}
             download
-            className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center space-x-2 shadow-lg shadow-brand-500/25 transition-all active:scale-95"
+            className="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/25 transition-all active:scale-95 whitespace-nowrap"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 shrink-0" />
             <span>Download ATS PDF</span>
           </a>
         </div>
