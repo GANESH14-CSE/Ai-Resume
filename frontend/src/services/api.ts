@@ -11,7 +11,7 @@ import {
   ApplyAndGeneratePayload
 } from '../types';
 
-const rawApiUrl = import.meta.env.VITE_API_BASE_URL;
+const rawApiUrl = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
 const isLocalhostUrl = rawApiUrl && (rawApiUrl.includes('localhost') || rawApiUrl.includes('127.0.0.1'));
 
 const API_BASE_URL = (import.meta.env.PROD && isLocalhostUrl)
@@ -41,10 +41,17 @@ apiClient.interceptors.response.use(
     if (error.response?.data?.error) {
       return Promise.reject(error.response.data.error);
     }
+    const responseData = error.response?.data;
+    let message = error.message || 'Unable to connect to the backend server.';
+    if (typeof responseData === 'string' && responseData.trim()) {
+      message = responseData.slice(0, 300);
+    } else if (responseData?.message) {
+      message = responseData.message;
+    }
     return Promise.reject({
-      code: 'NETWORK_ERROR',
-      message: error.message || 'Unable to connect to the backend server.',
-      details: {},
+      code: error.response?.status ? `HTTP_${error.response.status}` : 'NETWORK_ERROR',
+      message: message,
+      details: typeof responseData === 'object' ? responseData : {},
     });
   }
 );

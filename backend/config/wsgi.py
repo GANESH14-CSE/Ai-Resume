@@ -9,15 +9,24 @@ if str(BASE_DIR) not in sys.path:
 
 import shutil
 
-# If running on Vercel, copy seed database to /tmp so SQLite is writable
-if os.getenv('VERCEL'):
+# If running on Vercel without external Postgres, ensure SQLite in /tmp has tables
+if os.getenv('VERCEL') and not os.getenv('DATABASE_URL'):
     tmp_db = Path('/tmp/db.sqlite3')
-    seed_db = BASE_DIR / 'db.sqlite3'
-    if not tmp_db.exists() and seed_db.exists():
-        try:
-            shutil.copy2(seed_db, tmp_db)
-        except Exception:
-            pass
+    if not tmp_db.exists() or tmp_db.stat().st_size == 0:
+        seed_candidates = [
+            BASE_DIR / 'db.sqlite3',
+            BASE_DIR.parent / 'backend' / 'db.sqlite3',
+            BASE_DIR.parent / 'db.sqlite3',
+            Path('/var/task/backend/db.sqlite3'),
+            Path('/var/task/db.sqlite3'),
+        ]
+        for candidate in seed_candidates:
+            if candidate.exists() and candidate.stat().st_size > 0:
+                try:
+                    shutil.copy2(candidate, tmp_db)
+                    break
+                except Exception:
+                    pass
 
 import traceback
 
@@ -26,6 +35,20 @@ try:
     from django.core.wsgi import get_wsgi_application
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
     django_app = get_wsgi_application()
+
+    # Guarantee database tables exist on Vercel
+    if os.getenv('VERCEL') and not os.getenv('DATABASE_URL'):
+        try:
+            from django.db import connection
+            tables = connection.introspection.table_names()
+            if 'auth_user' not in tables:
+                from django.core.management import call_command
+                call_command('migrate', interactive=False)
+                from django.contrib.auth.models import User
+                if not User.objects.filter(is_superuser=True).exists():
+                    User.objects.create_superuser('admin', 'admin@example.com', 'adminpassword123')
+        except Exception as db_init_err:
+            print(f"Vercel DB initialization notice: {db_init_err}")
 except Exception:
     startup_error = traceback.format_exc()
     django_app = None

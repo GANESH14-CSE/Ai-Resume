@@ -13,6 +13,8 @@ export interface HealthCheckResponse {
   python_version: string;
   llm_provider: string;
   mock_llm: boolean;
+  ai_configured?: boolean;
+  database_connected?: boolean;
 }
 
 export interface User {

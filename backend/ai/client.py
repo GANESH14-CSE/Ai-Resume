@@ -54,9 +54,14 @@ class AIClient:
             
         try:
             from openai import OpenAI
+            timeout = getattr(settings, 'LLM_TIMEOUT_SECONDS', 30)
             if provider.lower() == 'gemini':
-                return OpenAI(api_key=api_key, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
-            return OpenAI(api_key=api_key)
+                return OpenAI(
+                    api_key=api_key,
+                    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+                    timeout=timeout
+                )
+            return OpenAI(api_key=api_key, timeout=timeout)
         except Exception as e:
             logger.error(f"Error initializing {provider} client: {e}")
             return None

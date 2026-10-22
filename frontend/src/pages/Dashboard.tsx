@@ -132,7 +132,9 @@ export const Dashboard: React.FC = () => {
             {isHealthLoading ? 'Checking...' : health?.llm_provider || 'OpenAI'}
           </div>
           <p className="text-xs text-slate-500">
-            {health?.mock_llm ? 'Mock mode' : 'Live OpenAI GPT-4o-mini'}
+            {health?.ai_configured === false
+              ? '⚠️ API Key missing in Vercel'
+              : (health?.mock_llm ? 'Mock mode' : `Live ${health?.llm_provider || 'OpenAI'}`)}
           </p>
         </div>
 

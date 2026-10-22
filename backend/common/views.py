@@ -12,13 +12,35 @@ class HealthCheckView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        has_openai = bool(getattr(settings, 'OPENAI_API_KEY', '').strip())
+        has_gemini = bool(getattr(settings, 'GEMINI_API_KEY', '').strip())
+        configured = has_openai or has_gemini
+        
+        provider = getattr(settings, 'LLM_PROVIDER', 'openai')
+        if not has_openai and has_gemini:
+            active_provider = 'gemini'
+        elif has_openai and not has_gemini:
+            active_provider = 'openai'
+        else:
+            active_provider = provider
+
+        # Database verification
+        db_ok = True
+        try:
+            from django.contrib.auth.models import User
+            User.objects.exists()
+        except Exception:
+            db_ok = False
+
         return Response({
-            "status": "healthy",
+            "status": "healthy" if db_ok else "database_warning",
             "service": "Truthful AI Resume Tailor API",
             "version": "1.0.0",
             "python_version": sys.version.split()[0],
-            "llm_provider": getattr(settings, 'LLM_PROVIDER', 'mock'),
+            "llm_provider": active_provider,
             "mock_llm": getattr(settings, 'MOCK_LLM', True),
+            "ai_configured": configured,
+            "database_connected": db_ok,
         })
 
 class AuthLoginView(APIView):

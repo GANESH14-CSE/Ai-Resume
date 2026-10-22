@@ -38,6 +38,11 @@ export const Navbar: React.FC = () => {
               <CheckCircle2 className="w-3 h-3 shrink-0" />
               <span className="capitalize">{health.status}</span>
               <span className="text-slate-400 hidden xs:inline">({health.llm_provider})</span>
+              {health.ai_configured === false && (
+                <span className="text-amber-400 text-[10px] ml-1 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/40 hidden xs:inline">
+                  Key Missing
+                </span>
+              )}
             </span>
           )}
           {isError && (
